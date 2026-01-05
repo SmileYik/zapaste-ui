@@ -1,4 +1,6 @@
-export default class Summary {
+import type { PaginationParams } from "./page_list";
+
+export default class PasteSummary {
     id?: number;
     name?: string;
     content_type?: string;
@@ -8,4 +10,10 @@ export default class Summary {
     latest_read_at?: number;
     create_at?: number;
     expiration_at?: number;
+
+    constructor(data?: Partial<PasteSummary>) {
+        if (data) {
+            Object.assign(this, data);
+        }
+    }
 };

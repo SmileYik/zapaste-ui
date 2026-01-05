@@ -5,4 +5,10 @@ export default class File {
     filesize?: number;
     filepath?: string;
     mimetype?: string;
+
+    constructor(data?: Partial<File>) {
+        if (data) {
+            Object.assign(this, data);
+        }
+    }
 };

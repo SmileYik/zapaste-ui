@@ -1,0 +1,15 @@
+.paste-summary-item {
+    position: relative;
+    border-radius: 16px;
+    height: 100%;
+    width: 100%;
+
+    transition-duration: 250ms;
+    transition-timing-function: ease-in-out;
+
+    --md-elevation-level: 3;
+}
+
+.paste-summary-item:hover {
+    --md-elevation-level: 0;
+}

@@ -1,7 +1,29 @@
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query"
+import { fetchPublicPastes } from "./api"
+import { useState } from "react";
+import PasteSummary from "./entity/paste_summary";
+import PaginationList from "./components/pagination-list";
+import type PaginationListHandler from "./components/pagination-list/pagination-list-handler";
+import PasteSummaryPageHandler from "./components/paste-summary-page/PasteSummaryPage";
+
+const queryClient = new QueryClient()
+
 function App() {
+
   return (
     <>
-      <p>Hello Zapaste</p>
+      <QueryClientProvider client={queryClient}>
+        <p>Hello Zapaste</p>
+        <Example></Example>
+      </QueryClientProvider>
+    </>
+  )
+}
+
+function Example() {
+  return (
+    <>
+      <PaginationList requestFn={fetchPublicPastes} handler={new PasteSummaryPageHandler()}></PaginationList>
     </>
   )
 }

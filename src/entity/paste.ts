@@ -14,4 +14,10 @@ export default class Paste {
     create_at?: number;
     expiration_at?: number;
     profiles?: string;
+
+    constructor(data?: Partial<Paste>) {
+        if (data) {
+            Object.assign(this, data);
+        }
+    }
 };
