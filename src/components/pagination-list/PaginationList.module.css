@@ -1,0 +1,24 @@
+.page-number {
+    position: relative;
+    transition: all 200ms ease-in-out;
+
+    background-color: var(--md-sys-color-surface, #ffffff);
+    border-radius: 12px;
+    padding: 8px 12px;
+    margin: 8px;
+    height: 44px;
+    --md-elevation-level: 0;
+}
+
+.page-number:hover {
+    transform: translateY(-4px);
+    --md-elevation-level: 2;
+}
+
+.page-button:hover {
+    transition: all 200ms ease-in-out;
+}
+
+.page-button:hover {
+    transform: translateY(-4px);
+}

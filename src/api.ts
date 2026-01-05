@@ -4,7 +4,7 @@ import PasteModel from "./entity/paste_model";
 import PasteSummary from "./entity/paste_summary"
 import Result from "./entity/result"
 
-const baseUrl = "http://localhost:5000/api"
+const baseUrl = "http://localhost:3000/api"
 
 const response2PasteModel = async (response: Response): Promise<PasteModel> => {
     const json = await response.json();

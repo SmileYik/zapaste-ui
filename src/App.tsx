@@ -3,8 +3,9 @@ import { fetchPublicPastes } from "./api"
 import { useState } from "react";
 import PasteSummary from "./entity/paste_summary";
 import PaginationList from "./components/pagination-list";
-import type PaginationListHandler from "./components/pagination-list/pagination-list-handler";
+import type PaginationListHandler from "./components/pagination-list/PaginationListHandler";
 import PasteSummaryPageHandler from "./components/paste-summary-page/PasteSummaryPage";
+import { MdElevation } from "./components/Material";
 
 const queryClient = new QueryClient()
 
