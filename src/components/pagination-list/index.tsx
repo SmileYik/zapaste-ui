@@ -14,15 +14,20 @@ export default function PaginationList<T>({
     requestFn,
     handler,
     minWidth = 265,
+    maxSizePerLine = 5,
     lineCount = 3,
 }: PaginationListProps<T>) {
     const containerRef = useRef<HTMLDivElement>(null);
     const {width} = useResizeObserver(containerRef);
     const [pageNo, setPageNo] = useState(1);
+    const realWidth = useMemo(() => {
+        const maxWidth = Math.floor(width / maxSizePerLine)
+        return Math.max(minWidth, maxWidth)
+    }, [width, minWidth, maxSizePerLine])
     
     const pageSize = useMemo(() => {
-        return Math.max(1, Math.floor(width / minWidth)) * lineCount;
-    }, [width, lineCount]);
+        return Math.max(1, Math.floor(width / realWidth)) * lineCount;
+    }, [width, lineCount, realWidth]);
 
     const pageParams = useMemo(() => {
         return {
@@ -54,11 +59,32 @@ export default function PaginationList<T>({
         setPageNo(Math.min(data?.page_count || 1, realPageNo + 1));
     }, [realPageNo, data])
 
+    const renderColumn = useCallback((item: T, index: number, isEmpty: boolean) => {
+        const isHidden = !isPending && isEmpty
+        return (
+            <MdListItem 
+                key={isEmpty ? `empty-skeleton-${index}` : handler.elementKey(item, index)} 
+                style={{
+                    flex: "0 0 calc(20% - 12px)",
+                    justifyContent: "center",
+                    textAlign: "center",
+                    minWidth: realWidth,
+                    maxWidth: realWidth,
+                    visibility: isHidden ? "hidden" : "visible"
+                }}
+            >
+                <div>
+                    {(isPending ? handler.skeletonRender : handler.elementRender)(item, index)}
+                </div>
+            </MdListItem>
+        );
+    }, [handler, realWidth, isPending])
     
     return (
         <div>
             <div ref={containerRef} style={{
-                position: "relative"
+                position: "relative",
+                width: "100%"
             }}>
                 {isPending && <MaskPanel><div style={{
                     width: "100%",
@@ -72,31 +98,8 @@ export default function PaginationList<T>({
                     justifyContent: "center",
                     width: "100%"
                 }}>
-                    {(data?.list || []).map((item, index) => (
-                        <MdListItem key={handler.elementKey(item, index)} style={{
-                            flex: "0 0 calc(20% - 12px)",
-                            justifyContent: "center",
-                            textAlign: "center",
-                            minWidth: minWidth
-                        }}>
-                            <div>
-                                {(isPending ? handler.skeletonRender : handler.elementRender)(item, index)}
-                            </div>
-                        </MdListItem>
-                    ))}
-                    {emptyItems.map((item, index) => (
-                        <MdListItem key={`empty-${index}`} style={{
-                            flex: "0 0 calc(20% - 12px)",
-                            justifyContent: "center",
-                            textAlign: "center",
-                            minWidth: minWidth,
-                            visibility: "hidden" // (isPending ? "visible" : "hidden")
-                        }}>
-                            <div>
-                                {(isPending ? handler.skeletonRender : handler.elementRender)(item as T, index)}
-                            </div>
-                        </MdListItem>
-                    ))}
+                    {(data?.list || []).map((item, index) => renderColumn(item, index, false))}
+                    {emptyItems.map((item, index) => renderColumn(item as T, index, true))}
                 </MdList>
             </div>
             <div style={{
@@ -139,5 +142,6 @@ interface PaginationListProps<T> {
     requestFn: (pageParams: PaginationParams) => Promise<PageList<T>>,
     handler: PaginationListHandler<T>,
     minWidth?: number,
-    lineCount?: number
+    lineCount?: number,
+    maxSizePerLine?: number
 }
