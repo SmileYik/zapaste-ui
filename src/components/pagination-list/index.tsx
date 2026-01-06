@@ -49,7 +49,7 @@ export default function PaginationList<T>({
         return Array.from({ length: pageSize - (data?.list || []).length }, (_, i) => {return {
             id: i
         } as PasteSummary}) as Array<PasteSummary>;
-    }, [data]);
+    }, [data, pageSize]);
 
     const previousPage = useCallback(() => {
         setPageNo(Math.max(1, realPageNo - 1));
@@ -70,7 +70,8 @@ export default function PaginationList<T>({
                     textAlign: "center",
                     minWidth: realWidth,
                     maxWidth: realWidth,
-                    visibility: isHidden ? "hidden" : "visible"
+                    opacity: isHidden ? 0 : 1,
+                    transition: "all 200ms ease-in-out"
                 }}
             >
                 <div>
