@@ -1,15 +1,14 @@
-import { SecondaryTab } from "@material/web/tabs/internal/secondary-tab";
-import { MdDivider, MdElevatedButton, MdElevation, MdFilledButton, MdFilledTonalButton, MdIcon, MdPrimaryTab, MdSecondaryTab, MdTabs, MdTextButton } from "../Material";
+import { MdElevation, MdFilledTonalButton, MdIcon, MdTextButton } from "../Material";
 import styles from "./HeadTabLine.module.css"
 import { useCallback, useEffect, useRef, useState, type MouseEventHandler } from "react";
-import { lock } from "../Icons";
 
 export default function HeadTabLine({
     items = ([] as HeadTabItem[]),
+    attach,
     defaultSelect = items[0]?.name || "",
     onChange = undefined
 }: HeadTabLineProps) {
-    if (items.length == 0) return <></>
+    if (items.length == 0 && attach === undefined) return <></>
 
     const [selected, setSelected] = useState(defaultSelect);
     const [isSticky, setIsSticky] = useState(false);
@@ -40,7 +39,7 @@ export default function HeadTabLine({
     }, []);
 
     const switchItem = useCallback((item: HeadTabItem) => {
-        if (selected === item.name || isAnimationTriggered) return;
+        if (attach === undefined && selected === item.name || isAnimationTriggered) return;
         setSelected(item.name);
         if (onChange) {
             onChange(item);
@@ -60,7 +59,7 @@ export default function HeadTabLine({
                                 flex: 1,
                                 animationDelay: isAnimationTriggered ? `${index * 0.08}s` : '0s'
                             }}
-                            active={selected === item.name}
+                            active={attach === undefined && selected === item.name}
                             onClick={() => switchItem(item)}
                             className={isAnimationTriggered ? styles["animated-button"] : ""}
                         >
@@ -68,6 +67,14 @@ export default function HeadTabLine({
                             {item.label}
                         </MenuTab>
                     ))}
+                    <MenuTab
+                        onClick={() => switchItem(items.filter(item => item.name === selected)[0] || items[0])}
+                        active={true}
+                        className={`${styles["attach-tab"]} ${attach ? styles["attach-active"] : styles["attach-hidden"]}`}
+                    >
+                        {attach?.icon && <MdIcon slot="icon">{attach.icon}</MdIcon>}
+                        {attach?.label}
+                    </MenuTab>
                 </div>
             </div>
         </>
@@ -76,8 +83,9 @@ export default function HeadTabLine({
 
 interface HeadTabLineProps {
     items?: HeadTabItem[],
+    attach?: HeadTabItem,
     defaultSelect?: string,
-    onChange?: (item: HeadTabItem) => {},
+    onChange?: (item: HeadTabItem) => void,
 };
 
 function MenuTab({
