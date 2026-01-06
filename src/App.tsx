@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import HeadTabLine from "./components/HeadTabLine/HeadTabLine";
 import { menu, menus } from "./Menu";
-import { Outlet, useLocation, useMatches, useNavigate, type UIMatch } from "react-router";
+import { Outlet, useMatches, useNavigate, type UIMatch } from "react-router";
+import "./App.css";
 
 const queryClient = new QueryClient()
 
@@ -23,7 +24,7 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <HeadTabLine defaultSelect={menu.currentId()} items={menus} onChange={item => navigate(item.path || "#")} attach={getAttachMenuItem(current)}></HeadTabLine>
-        <div>
+        <div className="content">
           <Outlet/>
         </div>
       </QueryClientProvider>
