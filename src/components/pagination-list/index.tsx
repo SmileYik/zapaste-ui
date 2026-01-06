@@ -16,6 +16,7 @@ export default function PaginationList<T>({
     minWidth = 265,
     maxSizePerLine = 5,
     lineCount = 3,
+    onClick,
 }: PaginationListProps<T>) {
     const containerRef = useRef<HTMLDivElement>(null);
     const {width} = useResizeObserver(containerRef);
@@ -73,6 +74,7 @@ export default function PaginationList<T>({
                     opacity: isHidden ? 0 : 1,
                     transition: "all 200ms ease-in-out"
                 }}
+                onClick={() => onClick && onClick(item)}
             >
                 <div>
                     {(isPending ? handler.skeletonRender : handler.elementRender)(item, index)}
@@ -144,5 +146,6 @@ interface PaginationListProps<T> {
     handler: PaginationListHandler<T>,
     minWidth?: number,
     lineCount?: number,
-    maxSizePerLine?: number
+    maxSizePerLine?: number,
+    onClick?: (item: T) => void
 }
