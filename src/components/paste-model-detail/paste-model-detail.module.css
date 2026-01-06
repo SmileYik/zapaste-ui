@@ -1,0 +1,124 @@
+.detail-wrapper {
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+.panel {
+    position: relative;
+    background-color: var(--md-sys-color-surface, #ffffff);
+    border-radius: 28px;
+    
+    width: 100%;
+    max-width: 1000px;
+    margin: 8px auto;
+    
+    --md-elevation-level: 1;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 8px 24px;
+}
+
+.title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-right: 16px;
+}
+
+.title {
+    font-size: 2rem;
+    margin: 0;
+    color: var(--md-sys-color-on-surface);  
+    word-wrap: anywhere;
+}
+
+.metadata {
+    display: flex;
+    gap: 16px;
+    padding: 0 24px 16px 24px;
+    font-size: 0.85rem;
+    color: var(--md-sys-color-on-surface-variant);
+    align-items: center;
+}
+
+.metadata span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.metadata md-icon {
+    --md-icon-size: 16px;
+}
+
+.lang-tag {
+    margin-left: auto;
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.code-container {
+    padding: 16px;
+}
+
+.actions {
+    display: flex;
+    gap: 4px;
+}
+
+.skeleton-wrapper {
+
+    .title {
+        min-width: 100px;
+        width: 265px;
+        max-width: 300px;
+        height: 40px;
+    }
+
+    .actions {
+        width: 10%;
+        height: 40px;
+    }
+
+    .metadata {
+        width: 30%;
+        margin-left: 24px;
+        margin-bottom: 8px;
+    }
+
+    .panel-body {
+        min-height: 350px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .code-container {
+        margin: 24px 24px;
+        height: 90%;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg, 
+        rgba(200, 200, 200, 0.2) 25%, 
+        rgba(200, 200, 200, 0.4) 50%, 
+        rgba(200, 200, 200, 0.2) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}

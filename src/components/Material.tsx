@@ -14,6 +14,11 @@ import { MdFilledTonalButton as MdFilledTonalButtonElement } from '@material/web
 import { MdTextButton as MdTextButtonElement } from '@material/web/button/text-button.js';
 import { MdOutlinedTextField as MdOutlinedTextFieldElement } from '@material/web/textfield/outlined-text-field.js';
 import { MdFilledTextField as MdFilledTextFieldElement } from '@material/web/textfield/filled-text-field.js';
+import { MdIconButton as MdIconButtonElement } from '@material/web/iconbutton/icon-button.js';
+import { MdFilledIconButton as MdFilledIconButtonElement } from '@material/web/iconbutton/filled-icon-button.js';
+import { MdFilledTonalIconButton as MdFilledTonalIconButtonElement } from '@material/web/iconbutton/filled-tonal-icon-button.js';
+import { MdOutlinedIconButton as MdOutlinedIconButtonElement } from '@material/web/iconbutton/outlined-icon-button.js';
+import { MdDialog as MdDialogElement } from '@material/web/dialog/dialog.js';
 
 import { createComponent } from '@lit/react';
 
@@ -104,5 +109,35 @@ export const MdOutlinedTextField = createComponent({
 export const MdFilledTextField = createComponent({
     tagName: 'md-filled-text-field',
     elementClass: MdFilledTextFieldElement,
+    react: React
+});
+
+export const MdIconButton = createComponent({
+    tagName: 'md-icon-button',
+    elementClass: MdIconButtonElement,
+    react: React,
+});
+
+export const MdFilledIconButton = createComponent({
+    tagName: 'md-filled-icon-button',
+    elementClass: MdFilledIconButtonElement,
+    react: React,
+});
+
+export const MdFilledTonalIconButton = createComponent({
+    tagName: 'md-filled-tonal-icon-button',
+    elementClass: MdFilledTonalIconButtonElement,
+    react: React,
+});
+
+export const MdOutlinedIconButton = createComponent({
+    tagName: 'md-outlined-icon-button',
+    elementClass: MdOutlinedIconButtonElement,
+    react: React,
+});
+
+export const MdDialog = createComponent({
+    tagName: 'md-dialog',
+    elementClass: MdDialogElement,
     react: React
 });

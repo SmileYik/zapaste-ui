@@ -1,161 +1,127 @@
 import { solarizedLight as codeStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import { MdDivider, MdElevation, MdFilledTextField, MdOutlinedButton, MdOutlinedTextField } from "../../components/Material";
+import { MdDialog, MdDivider, MdElevation, MdFilledButton, MdFilledTextField, MdFilledTonalButton, MdIcon, MdOutlinedButton, MdOutlinedIconButton, MdOutlinedTextField } from "../../components/Material";
 import type PasteModel from "../../entity/paste_model";
 import styles from "./paste-detail.module.css"
 import { LightAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import hljs from 'highlight.js';
+import { calendar_today, content_copy, edit_document, lock, visibility, visibility_off } from "../../components/Icons";
+import FileList from "../../components/file-list/file-list";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getLockedPaste } from "../../api";
+import PatseModelDetail, { PatseModelDetailSkeleton } from "../../components/paste-model-detail/paste-model-detail";
+import { useLocation, useMatches, useNavigate } from "react-router";
 
 export default function PatseDetail({
-    pasteModel = {
-        "paste": {
-          "id": 14,
-          "name": "waryid-goldcrest",
-          "content": "string",
-          "attachements": "8",
-          "private": false,
-          "has_password": false,
-          "read_count": 8,
-          "latest_read_at": 1767168862,
-          "create_at": 1767149274,
-          "profiles": "{}"
-        },
-        "files": [
-          {
-            "id": 8,
-            "hash": "C83F15B0CAFC9CBBEC1AFB903D185F9FC6349B85F5963AD1055381CF00BDC2479D88D9BB5B9CFDFB410F0769E4AD4D57F53E392BE60478DB8D609E2496DEF25C",
-            "filename": "引用里的视频.7z",
-            "filesize": 5047348,
-            "mimetype": "application/x-compressed"
-          }
-        ]
-    } as PasteModel
+
 }: PatseDetailProps) {
+    const matches = useMatches();
+    const route = matches[matches.length - 1];
+    const navigate = useNavigate();
 
-    const paste = pasteModel.paste || {};
-    paste.content = `
-.sticky-panel {
-    position: sticky;
-    top: 10px;
-    z-index: 100;
-}
+    const [name, setName] = useState(route.params?.name || "");
+    const [password, setPassword] = useState("");
+    const [passwordField, setPasswordField] = useState("");
+    const [errorTimes, setErrorTimes] = useState(0);
 
-.panel {
-    position: relative;
-    background-color: var(--md-sys-color-surface, #ffffff);
-    border-radius: 25px;
-    padding: 0px;
+    const isEmptyName = useMemo(() => {
+        return (name || "").trim().length === 0;
+    }, [name]);
 
-    width: 50%;
-    height: 50px;
-    margin: 20px auto;
+    const {isPending, error, data, isError} = useQuery({
+        queryKey: ["data", name, password],
+        queryFn: () => getLockedPaste(name, password),
+        retry: false,
+        enabled: !isEmptyName
+    });
+    useEffect(() => {
+        setErrorTimes(t => t + 1);
+        console.log(errorTimes);
+        
+    }, [isError])
 
-    display: flex;
-    justify-content: center;
-    flex-direction: row;
+    const enterPassword = useCallback(() => {
+        if (!passwordField || passwordField.trim().length === 0) {
+            return;
+        }
+        setPassword(passwordField);
+    }, [passwordField]);
 
-    user-select: none;
-    transition: all 200ms ease-in-out;
-    --md-elevation-level: 2;
-}
+    const gotoChoosePastePage = useCallback(() => {
+        navigate(route.pathname + "/..")
+    }, [])
 
-.is-sticky {
-    --md-elevation-level: 4;
-    transform: translateY(8px);
-}
-
-.panel-button {
-    min-width: 0;
-    padding: 0;
-    margin: 0;
-}
-
-@media (max-width: 768px) {
-    .panel {
-        width: 100%;
-        --md-elevation-level: 1; 
-    }
-}
-
-.animated-button {
-    animation: slide-in-fade 0.4s ease-out forwards;
-    opacity: 0;
-}
-
-@keyframes slide-in-fade {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.attach-tab {
-    overflow: hidden;
-    transition: 
-        flex-grow 400ms cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 300ms ease,
-        transform 300ms ease;
-    flex-basis: 0;
-    min-width: 0;
-}
-
-.attach-active {
-    flex-grow: 2;
-    opacity: 1;
-    transform: scale(1);
-}
-
-.attach-hidden {
-    flex-grow: 0;
-    opacity: 0;
-    pointer-events: none;
-    margin: 0;
-}
-`
-    const files = pasteModel.files;
-
-    const content = paste.content || "";
-    const highliteResult = hljs.highlightAuto(content);
-    const language = paste.content_type || highliteResult.language || "text"
     return (
-        <div>
-            <div className={styles["panel"]}>
-                <MdElevation></MdElevation>
-                <div className={styles["panel-header"]}>
-                    <div className={styles["header-title"]}>
-                        <span>{paste.name}</span>
-                    </div>
-                    <MdDivider/>
-                </div>
-                <div className={styles["panel-body"]}>
-                    <div className={styles["content-body"]}>
-                        <SyntaxHighlighter
-                            language={language}
-                            style={codeStyle}
-                            showLineNumbers
-                            customStyle={{
-                                "borderRadius": "24px",
-                                "minHeight": "350px",
-                                "padding": "20px",
-                                "margin": "16px"
-                            }}
-                            useInlineStyles
-                        >
-                            {content}
-                        </SyntaxHighlighter>
-                    </div>
-                </div>
-                <div>
+        <div className={styles["detail-container"]}>
+            {data && (
+                <PatseModelDetail pasteModel={data}></PatseModelDetail>
+            )}
 
-                </div>
-            </div>
+            {(isPending || isError) && (
+                <PatseModelDetailSkeleton></PatseModelDetailSkeleton>
+            )}
+            
+            <MdDialog open={!isPending && isError} type="alert">
+                <div slot="headline">请尝试输入密码</div>
+                <form slot="content" className={styles["password-dialog-content"]} method="dialog">
+                    <MdOutlinedTextField
+                        label="密码"
+                        placeholder="请输入密码"
+                        required
+                        defaultValue={passwordField}
+                        onChange={(target: any) => setPasswordField(target.target.value)}
+                        style={{
+                            width: "100%"
+                        }}
+                    ></MdOutlinedTextField>
+                    {errorTimes > 2 && (
+                        <span className={styles["password-dialog-error"]}>{error?.message}</span>)
+                    }
+
+                    <div slot="actions" className={styles["password-dialog-actions"]}>
+                        <MdFilledButton value="ok" onClick={enterPassword}>确定</MdFilledButton>
+                        <MdFilledTonalButton value="cancel" onClick={gotoChoosePastePage}>返回</MdFilledTonalButton>
+                    </div>
+                </form>
+            </MdDialog>
         </div>
     )
 }
 
 interface PatseDetailProps {
-    pasteModel?: PasteModel
+    
+}
+
+function PasteNameInput({
+    name = "",
+    onChange,
+}: PasteNameInputProps) {
+    const [currentName, setCurrentName] = useState(name)
+    return (
+        <div>
+            <form className={styles["request-paste-name"]} method="dialog">
+                <MdElevation/>
+
+                <MdOutlinedTextField
+                    label="剪切板名"
+                    placeholder="请输入剪切板名"
+                    required
+                    defaultValue={currentName}
+                    onChange={(target: any) => setCurrentName(target.target.value)}
+                    style={{
+                        width: "100%"
+                    }}
+                ></MdOutlinedTextField>
+
+                <div className={styles["request-paste-name-actions"]}>
+                    <MdFilledButton value="ok" onClick={() => onChange(currentName)}>确定</MdFilledButton>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+interface PasteNameInputProps {
+    name?: string,
+    onChange: (name: string) => void
 }

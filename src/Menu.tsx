@@ -13,6 +13,11 @@ export const menus = ([
         name: "new-paste",
         label: "新剪切板",
         path: "/paste/new"
+    },
+    {
+        name: "choose-paste",
+        label: "查看剪切板",
+        path: "/paste/view"
     }
 ]) as Menu[];
 

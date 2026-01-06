@@ -1,0 +1,16 @@
+.panel {
+    position: relative;
+    background-color: var(--md-sys-color-surface, #ffffff);
+    border-radius: 28px;
+    padding: 24px;
+    
+    --md-elevation-level: 2;
+
+    max-width: 500px;
+    margin: 100px auto;
+    text-align: center;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}

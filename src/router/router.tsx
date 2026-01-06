@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import Index from "../pages/index";
 import PasteList from "../pages/paste-list/paste-list";
 import App from "../App";
+import ChoosePaste from "../pages/choose-paste/choose-paste";
+import PatseDetail from "../pages/paste-detail/paste-detail";
 
 export const router = createBrowserRouter([
     {
@@ -34,9 +36,14 @@ export const router = createBrowserRouter([
                         Component: PasteList
                     },
                     {
+                        id: "choose-paste",
+                        path: "view",
+                        Component: ChoosePaste,
+                    },
+                    {
                         id: "view-paste",
                         path: "view/:name",
-                        Component: PasteList
+                        Component: PatseDetail,
                     }
                 ]
             },

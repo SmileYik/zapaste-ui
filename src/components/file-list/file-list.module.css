@@ -1,0 +1,35 @@
+.file-list {
+    margin-bottom: 24px;
+}
+
+.file-list-title {
+    margin-left: 24px;
+}
+
+.file-list-body {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    background-color: var(--md-sys-color-surface, #ffffff);
+}
+
+.file-panel {
+    position: relative;
+    background-color: var(--md-sys-color-surface, #ffffff);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 8px;
+    min-height: 120px;
+    transition: all 200ms ease-in-out;
+    
+    --md-elevation-level: 2;
+}
+
+.action-bar {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.delete-button {
+    --md-sys-color-on-surface-variant: var(--md-sys-color-error)
+}

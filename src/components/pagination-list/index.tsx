@@ -17,6 +17,10 @@ export default function PaginationList<T>({
     maxSizePerLine = 5,
     lineCount = 3,
     onClick,
+    disablePagination = false,
+    disableEmptyFill = false,
+    bodyClassName,
+    bypassData,
 }: PaginationListProps<T>) {
     const containerRef = useRef<HTMLDivElement>(null);
     const {width} = useResizeObserver(containerRef);
@@ -42,23 +46,28 @@ export default function PaginationList<T>({
         queryFn: () => requestFn(pageParams),
     });
 
+    const realData = useMemo(() => {
+        return bypassData || data;
+    }, [data, bypassData]);
+
     const realPageNo = useMemo(() => {
-        return data?.page_no || pageNo
-    }, [data, pageNo]);
+        return realData?.page_no || pageNo
+    }, [realData, pageNo]);
 
     const emptyItems = useMemo(() => {
-        return Array.from({ length: pageSize - (data?.list || []).length }, (_, i) => {return {
+        if (disableEmptyFill) return [];
+        return Array.from({ length: pageSize - (realData?.list || []).length }, (_, i) => {return {
             id: i
         } as PasteSummary}) as Array<PasteSummary>;
-    }, [data, pageSize]);
+    }, [realData, pageSize, disableEmptyFill]);
 
     const previousPage = useCallback(() => {
         setPageNo(Math.max(1, realPageNo - 1));
     }, [realPageNo])
 
     const nextPage = useCallback(() => {
-        setPageNo(Math.min(data?.page_count || 1, realPageNo + 1));
-    }, [realPageNo, data])
+        setPageNo(Math.min(realData?.page_count || 1, realPageNo + 1));
+    }, [realPageNo, realData])
 
     const renderColumn = useCallback((item: T, index: number, isEmpty: boolean) => {
         const isHidden = !isPending && isEmpty
@@ -96,18 +105,21 @@ export default function PaginationList<T>({
                     backgroundColor: "#ffffff65"
                 }}></div></MaskPanel>}
                 {error && <p>{error.message}</p>}
-                <MdList style={{
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    justifyContent: "center",
-                    width: "100%"
-                }}>
+                <MdList 
+                    className={bodyClassName} 
+                    style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                        width: "100%"
+                    }}
+                >
                     {(data?.list || []).map((item, index) => renderColumn(item, index, false))}
                     {emptyItems.map((item, index) => renderColumn(item as T, index, true))}
                 </MdList>
             </div>
             <div style={{
-                display: "flex",
+                display: disablePagination ? "none" : "flex",
                 justifyContent: "center",
                 gap: 24,
                 margin: 12,
@@ -129,7 +141,7 @@ export default function PaginationList<T>({
                     /
                     <span className={styles["page-number"]}>
                         <MdElevation/>
-                        <span>{data?.page_count || realPageNo}</span>
+                        <span>{realData?.page_count || realPageNo}</span>
                     </span>
                 </span>
                 <MdElevatedButton onClick={nextPage} className={styles["page-button"]}>
@@ -148,5 +160,9 @@ interface PaginationListProps<T> {
     minWidth?: number,
     lineCount?: number,
     maxSizePerLine?: number,
-    onClick?: (item: T) => void
+    onClick?: (item: T) => void,
+    disablePagination?: boolean,
+    disableEmptyFill?: boolean,
+    bodyClassName?: string,
+    bypassData?: PageList<T>
 }
