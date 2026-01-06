@@ -5,6 +5,13 @@ import { MdListItem as MdListItemElement } from '@material/web/list/list-item.js
 import { MdElevation as MdElevationElement } from '@material/web/elevation/elevation.js'
 import { MdIcon as MdIconElement } from '@material/web/icon/icon.js'
 import { MdElevatedButton as MdElevatedButtonElement } from '@material/web/button/elevated-button.js'
+import { MdTabs as MdTabsElement } from '@material/web/tabs/tabs.js'
+import { MdPrimaryTab as MdPrimaryTabElement } from '@material/web/tabs/primary-tab.js'
+import { MdSecondaryTab as MdSecondaryTabElement } from '@material/web/tabs/secondary-tab.js'
+import { MdOutlinedButton as MdOutlinedButtonElement } from '@material/web/button/outlined-button.js';
+import { MdFilledButton as MdFilledButtonElement } from '@material/web/button/filled-button.js';
+import { MdFilledTonalButton as MdFilledTonalButtonElement } from '@material/web/button/filled-tonal-button.js';
+import { MdTextButton as MdTextButtonElement } from '@material/web/button/text-button.js';
 
 import { createComponent } from '@lit/react';
 
@@ -41,5 +48,47 @@ export const MdIcon = createComponent({
 export const MdElevatedButton = createComponent({
     tagName: 'md-elevated-button',
     elementClass: MdElevatedButtonElement,
+    react: React,
+});
+
+export const MdTabs = createComponent({
+    tagName: 'md-tabs',
+    elementClass: MdTabsElement,
+    react: React,
+});
+
+export const MdPrimaryTab = createComponent({
+    tagName: 'md-primary-tab',
+    elementClass: MdPrimaryTabElement,
+    react: React,
+});
+
+export const MdSecondaryTab = createComponent({
+    tagName: 'md-secondary-tab',
+    elementClass: MdSecondaryTabElement,
+    react: React,
+});
+
+export const MdOutlinedButton = createComponent({
+    tagName: 'md-outlined-button',
+    elementClass: MdOutlinedButtonElement,
+    react: React,
+});
+
+export const MdFilledButton = createComponent({
+    tagName: 'md-filled-button',
+    elementClass: MdFilledButtonElement,
+    react: React,
+});
+
+export const MdFilledTonalButton = createComponent({
+    tagName: 'md-filled-tonal-button',
+    elementClass: MdFilledTonalButtonElement,
+    react: React,
+});
+
+export const MdTextButton = createComponent({
+    tagName: 'md-text-button',
+    elementClass: MdTextButtonElement,
     react: React,
 });

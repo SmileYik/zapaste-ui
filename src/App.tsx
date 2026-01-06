@@ -6,6 +6,7 @@ import PaginationList from "./components/pagination-list";
 import type PaginationListHandler from "./components/pagination-list/PaginationListHandler";
 import PasteSummaryPageHandler from "./components/paste-summary-page/PasteSummaryPage";
 import { MdElevation } from "./components/Material";
+import HeadTabLine from "./components/HeadTabLine/HeadTabLine";
 
 const queryClient = new QueryClient()
 
@@ -15,6 +16,8 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <p>Hello Zapaste</p>
+        <HeadTabLine></HeadTabLine>
+        <Example></Example>
         <Example></Example>
       </QueryClientProvider>
     </>
