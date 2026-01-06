@@ -12,6 +12,8 @@ import { MdOutlinedButton as MdOutlinedButtonElement } from '@material/web/butto
 import { MdFilledButton as MdFilledButtonElement } from '@material/web/button/filled-button.js';
 import { MdFilledTonalButton as MdFilledTonalButtonElement } from '@material/web/button/filled-tonal-button.js';
 import { MdTextButton as MdTextButtonElement } from '@material/web/button/text-button.js';
+import { MdOutlinedTextField as MdOutlinedTextFieldElement } from '@material/web/textfield/outlined-text-field.js';
+import { MdFilledTextField as MdFilledTextFieldElement } from '@material/web/textfield/filled-text-field.js';
 
 import { createComponent } from '@lit/react';
 
@@ -91,4 +93,16 @@ export const MdTextButton = createComponent({
     tagName: 'md-text-button',
     elementClass: MdTextButtonElement,
     react: React,
+});
+
+export const MdOutlinedTextField = createComponent({
+    tagName: 'md-outlined-text-field',
+    elementClass: MdOutlinedTextFieldElement,
+    react: React
+});
+
+export const MdFilledTextField = createComponent({
+    tagName: 'md-filled-text-field',
+    elementClass: MdFilledTextFieldElement,
+    react: React
 });

@@ -2,7 +2,7 @@ import Paste from "./paste";
 import File from "./file";
 
 export default class PasteModel {
-    paste?: Paste = undefined;
+    paste: Paste | null = null;
     files: File[] = [];
 
     constructor(data?: Partial<PasteModel>) {

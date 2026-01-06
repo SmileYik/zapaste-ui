@@ -1,0 +1,27 @@
+.panel {
+    position: relative;
+    background-color: var(--md-sys-color-surface, #ffffff);
+    border-radius: 25px;
+    padding: 8px;
+
+    min-height: 500px;
+    margin: 20px auto;
+
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+
+    transition: all 200ms ease-in-out;
+    --md-elevation-level: 2;
+}
+
+.panel-header {
+    width: 100%;
+    margin: 8px;
+    padding: 8px;
+}
+
+.header-title {
+    text-align: center;
+    
+}
