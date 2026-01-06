@@ -72,6 +72,7 @@ export default function PaginationList<T>({
                     minWidth: realWidth,
                     maxWidth: realWidth,
                     opacity: isHidden ? 0 : 1,
+                    pointerEvents: isHidden ? "none" : "auto",
                     transition: "all 200ms ease-in-out"
                 }}
                 onClick={() => onClick && onClick(item)}

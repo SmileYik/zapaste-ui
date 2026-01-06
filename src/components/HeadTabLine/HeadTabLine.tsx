@@ -1,11 +1,19 @@
+import { useMatches } from "react-router";
 import { MdElevation, MdFilledTonalButton, MdIcon, MdTextButton } from "../Material";
 import styles from "./HeadTabLine.module.css"
-import { useCallback, useEffect, useRef, useState, type MouseEventHandler } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEventHandler } from "react";
+import { menu } from "../../Menu";
+
+function getCurrentRouteId() {
+    const routes = useMatches();
+    const currentRouteId = routes[routes.length - 1]?.id;
+    return currentRouteId;
+}
 
 export default function HeadTabLine({
     items = ([] as HeadTabItem[]),
     attach,
-    defaultSelect = items[0]?.name || "",
+    defaultSelect,
     onChange = undefined
 }: HeadTabLineProps) {
     if (items.length == 0 && attach === undefined) return <></>
@@ -14,6 +22,12 @@ export default function HeadTabLine({
     const [isSticky, setIsSticky] = useState(false);
     const sentinelRef = useRef<HTMLDivElement>(null);
     const [isAnimationTriggered, setAnimationTriggered] = useState(false);
+    const currentRouteId = getCurrentRouteId();
+    const activeId = useMemo(() => {
+        const id = selected || currentRouteId;
+        menu.record(id);
+        return id;
+    }, [selected])
 
     useEffect(() => {
         setAnimationTriggered(true);
@@ -39,12 +53,12 @@ export default function HeadTabLine({
     }, []);
 
     const switchItem = useCallback((item: HeadTabItem) => {
-        if (attach === undefined && selected === item.name || isAnimationTriggered) return;
+        if (attach === undefined && activeId === item.name || isAnimationTriggered) return;
         setSelected(item.name);
         if (onChange) {
             onChange(item);
         }
-    }, [onChange, selected, isAnimationTriggered])
+    }, [onChange, activeId, isAnimationTriggered])
 
     return (
         <>
@@ -59,7 +73,7 @@ export default function HeadTabLine({
                                 flex: 1,
                                 animationDelay: isAnimationTriggered ? `${index * 0.08}s` : '0s'
                             }}
-                            active={attach === undefined && selected === item.name}
+                            active={attach === undefined && activeId === item.name}
                             onClick={() => switchItem(item)}
                             className={isAnimationTriggered ? styles["animated-button"] : ""}
                         >
@@ -68,7 +82,7 @@ export default function HeadTabLine({
                         </MenuTab>
                     ))}
                     <MenuTab
-                        onClick={() => switchItem(items.filter(item => item.name === selected)[0] || items[0])}
+                        onClick={() => switchItem(items.filter(item => item.name === activeId)[0] || items[0])}
                         active={true}
                         className={`${styles["attach-tab"]} ${attach ? styles["attach-active"] : styles["attach-hidden"]}`}
                     >
@@ -114,5 +128,6 @@ interface MenuTabProps {
 export interface HeadTabItem {
     name: string,
     label: string,
-    icon?: React.ReactNode
+    icon?: React.ReactNode,
+    path?: string
 }

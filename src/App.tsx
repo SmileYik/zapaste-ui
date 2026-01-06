@@ -1,33 +1,32 @@
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query"
-import { fetchPublicPastes } from "./api"
-import { useState } from "react";
-import PasteSummary from "./entity/paste_summary";
-import PaginationList from "./components/pagination-list";
-import type PaginationListHandler from "./components/pagination-list/PaginationListHandler";
-import PasteSummaryPageHandler from "./components/paste-summary-page/PasteSummaryPage";
-import { MdElevation } from "./components/Material";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import HeadTabLine from "./components/HeadTabLine/HeadTabLine";
+import { menu, menus } from "./Menu";
+import { Outlet, useLocation, useMatches, useNavigate, type UIMatch } from "react-router";
 
 const queryClient = new QueryClient()
 
-function App() {
+function getAttachMenuItem(current: UIMatch) {
+  switch (current.id || "") {
+    case "view-paste":
+      return {name: current.id, label: current.params?.name || ""}
+  }
+  return undefined;
+}
 
+function App() {
+  const navigate = useNavigate()
+  console.log(useMatches());
+  const maches = useMatches();
+  const current = maches[maches.length - 1];
+  
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <p>Hello Zapaste</p>
-        <HeadTabLine></HeadTabLine>
-        <Example></Example>
-        <Example></Example>
+        <HeadTabLine defaultSelect={menu.currentId()} items={menus} onChange={item => navigate(item.path || "#")} attach={getAttachMenuItem(current)}></HeadTabLine>
+        <div>
+          <Outlet/>
+        </div>
       </QueryClientProvider>
-    </>
-  )
-}
-
-function Example() {
-  return (
-    <>
-      <PaginationList requestFn={fetchPublicPastes} handler={new PasteSummaryPageHandler()}></PaginationList>
     </>
   )
 }
