@@ -4,6 +4,7 @@ import PasteList from "../pages/paste-list/paste-list";
 import App from "../App";
 import ChoosePaste from "../pages/choose-paste/choose-paste";
 import PatseDetail from "../pages/paste-detail/paste-detail";
+import NewPaste from "../pages/new-paste/new-paste";
 
 export const router = createHashRouter([
     {
@@ -33,7 +34,7 @@ export const router = createHashRouter([
                     {
                         id: "new-paste",
                         path: "new",
-                        Component: PasteList
+                        Component: NewPaste
                     },
                     {
                         id: "choose-paste",

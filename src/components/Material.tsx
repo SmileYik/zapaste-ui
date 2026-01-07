@@ -19,6 +19,9 @@ import { MdFilledIconButton as MdFilledIconButtonElement } from '@material/web/i
 import { MdFilledTonalIconButton as MdFilledTonalIconButtonElement } from '@material/web/iconbutton/filled-tonal-icon-button.js';
 import { MdOutlinedIconButton as MdOutlinedIconButtonElement } from '@material/web/iconbutton/outlined-icon-button.js';
 import { MdDialog as MdDialogElement } from '@material/web/dialog/dialog.js';
+import { MdSwitch as MdSwitchElement } from '@material/web/switch/switch.js';
+import { MdOutlinedSelect as MdOutlinedSelectElement} from '@material/web/select/outlined-select.js';
+import { MdSelectOption as MdSelectOptionElement} from '@material/web/select/select-option.js';
 
 import { createComponent } from '@lit/react';
 
@@ -139,5 +142,23 @@ export const MdOutlinedIconButton = createComponent({
 export const MdDialog = createComponent({
     tagName: 'md-dialog',
     elementClass: MdDialogElement,
+    react: React
+});
+
+export const MdSwitch = createComponent({
+    tagName: 'md-switch',
+    elementClass: MdSwitchElement,
+    react: React
+});
+
+export const MdOutlinedSelect = createComponent({
+    tagName: 'md-outlined-select',
+    elementClass: MdOutlinedSelectElement,
+    react: React
+});
+
+export const MdSelectOption = createComponent({
+    tagName: 'md-select-option',
+    elementClass: MdSelectOptionElement,
     react: React
 });

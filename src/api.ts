@@ -52,6 +52,17 @@ export const createNewPasteWithoutFile = async (
     return await response2PasteModel(response);
 };
 
+export const createNewPasteWithFile = async (
+    body: FormData
+): Promise<PasteModel> => {
+    const response = await fetch(`${baseUrl}/paste`, {
+        method: "POST",
+        body: body
+    });
+
+    return await response2PasteModel(response);
+};
+
 export const getUnlockedPaste = async (
     name: string
 ): Promise<PasteModel> => {

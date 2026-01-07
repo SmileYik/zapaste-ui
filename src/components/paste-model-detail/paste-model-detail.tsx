@@ -1,7 +1,8 @@
-import { solarizedLight as codeStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
+
 import { MdDivider, MdElevation, MdIcon, MdOutlinedIconButton } from "../Material";
 import type PasteModel from "../../entity/paste_model";
 import styles from "./paste-model-detail.module.css"
+import { solarizedLight as codeStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { LightAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import hljs from 'highlight.js';
 import { calendar_today, content_copy, edit_document, lock, visibility, visibility_off } from "../Icons";

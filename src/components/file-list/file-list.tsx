@@ -13,6 +13,7 @@ export default function FileList({
     files = [] as File[],
     pasteName,
     readonly = false,
+    onDelete,
 }: FileListProps) {
 
     const pageResult = useMemo(() => {
@@ -35,12 +36,12 @@ export default function FileList({
         <div className={styles["file-list"]}>
             <div className={styles["file-list-header"]}>
                 {/* <h2 className={styles["file-list-title"]}>Files</h2> */}
-                <MdDivider/>
+                {/* <MdDivider/> */}
             </div>
             <PaginationList 
                 requestFn={requestList} 
                 bypassData={pageResult}
-                handler={new FileListHandler(readonly, pasteName)}
+                handler={new FileListHandler(readonly, pasteName, onDelete)}
                 disablePagination
                 disableEmptyFill
                 lineCount={1}
@@ -53,18 +54,21 @@ export default function FileList({
 interface FileListProps {
     files: File[],
     readonly?: boolean,
-    pasteName: string
+    pasteName: string,
+    onDelete?: (file: File) => void
 }
 
 class FileListHandler extends PaginationListHandler<File> {
 
     readonly: boolean = false;
     pasteName: string = "";
+    onDelete?: (file: File) => void;
 
-    constructor(readonly: boolean, pasteName: string) {
+    constructor(readonly: boolean, pasteName: string, onDelete?: (file: File) => void) {
         super()
         this.readonly = readonly;
         this.pasteName = pasteName;
+        this.onDelete = onDelete;
     }
 
     override skeletonRender = (_: File, __: number) => {
@@ -105,18 +109,21 @@ class FileListHandler extends PaginationListHandler<File> {
                 </div>
 
                 <div className={styles["action-bar"]}>
-                    <MdOutlinedIconButton 
-                        title="下载文件"
-                        className={styles["download-button"]}
-                        onClick={() => gotoDownload(item.filename || "")}
-                    >
-                        <MdIcon>{download}</MdIcon>
-                    </MdOutlinedIconButton>
+                    {item.id && (
+                        <MdOutlinedIconButton 
+                            title="下载文件"
+                            className={styles["download-button"]}
+                            onClick={() => gotoDownload(item.filename || "")}
+                        >
+                            <MdIcon>{download}</MdIcon>
+                        </MdOutlinedIconButton>
+                    )}
                     
                     {!this.readonly && (
                         <MdOutlinedIconButton 
                             title="删除"
                             className={styles["delete-button"]}
+                            onClick={() => this.onDelete && this.onDelete(item)}
                         >
                             <MdIcon>{delete_icon}</MdIcon>
                         </MdOutlinedIconButton>

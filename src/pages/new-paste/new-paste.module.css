@@ -1,0 +1,42 @@
+.panel {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    max-width: 1000px;
+    margin: 16px auto;
+
+    position: relative;
+    background-color: var(--md-sys-color-surface, #ffffff);
+    border-radius: 28px;
+    padding: 24px;
+    --md-elevation-level: 2;
+}
+
+.metadatas {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.switch {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    user-select: none;
+}
+
+.switch-text-field {
+    min-width: 100px;
+}
+
+.textarea {
+    margin: 8px;
+    min-height: 350px;
+}
+
+.paste-file {
+    width: 100%;
+}
