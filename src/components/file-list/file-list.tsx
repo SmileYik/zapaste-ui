@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import type File from "../../entity/file";
 import PaginationList from "../pagination-list";
 import PaginationListHandler from "../pagination-list/PaginationListHandler";
@@ -7,23 +7,23 @@ import type PageList from "../../entity/page_list";
 import { MdDivider, MdElevation, MdIcon, MdOutlinedIconButton } from "../Material";
 import { delete_icon, download, file_present, image } from "../Icons"
 import styles from "./file-list.module.css"
+import { downloadUrl } from "../../api";
 
 export default function FileList({
     files = [] as File[],
+    pasteName,
     readonly = false,
 }: FileListProps) {
-    
-    const [list] = useState(files);
 
     const pageResult = useMemo(() => {
         return {
-            list: list,
-            page_size: list.length,
-            total: list.length,
+            list: files,
+            page_size: files.length,
+            total: files.length,
             page_count: 1,
             page_no: 1
         } as PageList<File>
-    }, [list]);
+    }, [files]);
 
     const requestList = useCallback((_: PaginationParams) => {
         return new Promise<PageList<File>>((resolve, __) => {
@@ -40,7 +40,7 @@ export default function FileList({
             <PaginationList 
                 requestFn={requestList} 
                 bypassData={pageResult}
-                handler={new FileListHandler(readonly)}
+                handler={new FileListHandler(readonly, pasteName)}
                 disablePagination
                 disableEmptyFill
                 lineCount={1}
@@ -53,15 +53,18 @@ export default function FileList({
 interface FileListProps {
     files: File[],
     readonly?: boolean,
+    pasteName: string
 }
 
 class FileListHandler extends PaginationListHandler<File> {
 
     readonly: boolean = false;
+    pasteName: string = "";
 
-    constructor(readonly: boolean) {
+    constructor(readonly: boolean, pasteName: string) {
         super()
         this.readonly = readonly;
+        this.pasteName = pasteName;
     }
 
     override skeletonRender = (_: File, __: number) => {
@@ -73,7 +76,6 @@ class FileListHandler extends PaginationListHandler<File> {
     }
 
     override elementRender = (item: File, _: number) => {
-        console.log(item);
         const filename = item.filename || "未知";
         const filesize = item.filesize || 0;
 
@@ -84,6 +86,10 @@ class FileListHandler extends PaginationListHandler<File> {
             transformedSize /= 1024;
             unitIndex++;
         }
+
+        const gotoDownload = (filename: string) => {
+            window.open(downloadUrl(this.pasteName, filename));
+        };
 
         return (
             <div className={styles["file-panel"]}>
@@ -102,6 +108,7 @@ class FileListHandler extends PaginationListHandler<File> {
                     <MdOutlinedIconButton 
                         title="下载文件"
                         className={styles["download-button"]}
+                        onClick={() => gotoDownload(item.filename || "")}
                     >
                         <MdIcon>{download}</MdIcon>
                     </MdOutlinedIconButton>

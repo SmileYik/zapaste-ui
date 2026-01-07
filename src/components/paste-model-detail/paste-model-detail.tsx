@@ -72,7 +72,7 @@ export default function PatseModelDetail({
                     </div>
 
                     <div className={styles["file-container"]}>
-                        {files && files.length > 0 && <FileList readonly files={files || []}></FileList>}
+                        {files && files.length > 0 && <FileList readonly files={files || []} pasteName={paste.name || ""}></FileList>}
                     </div>
                 </div>
             </div>
