@@ -40,3 +40,9 @@
 .paste-file {
     width: 100%;
 }
+
+.danger-delete {
+    --_label-text-color: var(--md-sys-color-error, #ba1a1a);
+    --_outline-color: var(--md-sys-color-error, #ba1a1a);
+    --_hover-state-layer-color: var(--md-sys-color-error, #f85149);
+}

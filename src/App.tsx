@@ -16,7 +16,6 @@ function getAttachMenuItem(current: UIMatch) {
 
 function App() {
   const navigate = useNavigate()
-  console.log(useMatches());
   const maches = useMatches();
   const current = maches[maches.length - 1];
   

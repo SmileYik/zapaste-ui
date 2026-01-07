@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { MdDialog, MdElevatedButton, MdElevation, MdIcon, MdIconButton, MdOutlinedSelect, MdOutlinedTextField, MdPrimaryTab, MdSelectOption, MdSwitch, MdTabs, MdTextButton } from "../Material";
+import { MdDialog, MdElevatedButton, MdElevation, MdFilledButton, MdFilledTonalButton, MdIcon, MdIconButton, MdOutlinedButton, MdOutlinedSelect, MdOutlinedTextField, MdPrimaryTab, MdSelectOption, MdSwitch, MdTabs, MdTextButton } from "../Material";
 import styles from "./paste-editor.module.css"
 import { lock, lock_open_right } from "../Icons";
 import type { TextFieldType } from "@material/web/textfield/outlined-text-field";
@@ -8,7 +8,7 @@ import { LightAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import hljs from 'highlight.js';
 import type File from "../../entity/file";
 import FileList from "../file-list/file-list";
-import { createNewPasteWithFile, updatePasteWithFile } from "../../api";
+import { createNewPasteWithFile, deleteLockedPaste, updatePasteWithFile } from "../../api";
 import type { UnsupportedTextFieldType } from "@material/web/textfield/internal/text-field";
 import type PasteModel from "../../entity/paste_model";
 
@@ -32,6 +32,7 @@ export default function PasteEditor({
     pasteModle,
     readonly,
     onChange,
+    onDelete,
 }: PasteEditorProps) {
     const editMode = pasteModle?.paste?.name && true || false;
     const password = pasteModle?.paste?.password || "";
@@ -44,6 +45,8 @@ export default function PasteEditor({
     const [files, setFiles] = useState<Array<globalThis.File>>([]);
 
     const [error, setError] = useState<string>("");
+    const [isDelete, setDelete] = useState(false);
+    const [deleteComfirm, setDeleteComfirm] = useState("");
 
     const language = useMemo(() => {
         const highliteResult = hljs.highlightAuto(paste.content || "");
@@ -66,7 +69,6 @@ export default function PasteEditor({
         if (p.private === undefined) p.private = false;
         if (p.read_only === undefined) p.read_only = false;
         else if (p.expiration_at) p.expiration_at += Math.floor(Date.now() / 1000);
-        console.log(p)
 
         const hasContent = (p.content || "").trim() !== "";
         const hasFiles = files.length > 0;
@@ -110,6 +112,28 @@ export default function PasteEditor({
             .catch(e => {
                 setError(e.message);
             });
+    }
+
+    const beginDelete = () => {
+        setDelete(true);
+        setDeleteComfirm("");
+    }
+
+    const cancelDelete = () => {
+        setDelete(false);
+        setDeleteComfirm("");
+    }
+
+    const startDelete = () => {
+        const pasteName = deleteComfirm;
+        cancelDelete();
+        deleteLockedPaste(pasteName, password)
+        .then(_ => {
+            onDelete && onDelete();
+        })
+        .catch(e => {
+            setError(e.message);
+        })
     }
 
     return (
@@ -211,10 +235,20 @@ export default function PasteEditor({
                 <MdElevatedButton
                     style={{
                         width: "100%",
-                        margin: "24px auto"
+                        margin: "24px auto 2px"
                     }}
                     onClick={doAction}
                 >发布</MdElevatedButton>
+                {editMode && (
+                    <MdOutlinedButton
+                        className={styles["danger-delete"]}
+                        style={{
+                            width: "100%",
+                            margin: "24px auto 2px",
+                        }}
+                        onClick={beginDelete}
+                    >删除</MdOutlinedButton>
+                )}
             </form>
 
             <MdDialog 
@@ -229,6 +263,38 @@ export default function PasteEditor({
                     <MdTextButton onClick={() => setError("")}>确定</MdTextButton>
                 </div>
             </MdDialog>
+
+            <MdDialog 
+                open={isDelete}
+                type="alert"
+                onClose={cancelDelete}
+                onCancel={cancelDelete}
+                style={{width: "80%"}}
+            >
+                <div slot="headline" style={{color: "#ba1a1a"}}>是否删除</div>
+
+                <div slot="content" style={{color: "#ba1a1a"}}>
+                    <p>请输入当前剪切板名 '{paste.name}' 以确认删除</p>
+                    <MdOutlinedTextField 
+                        className={styles["danger-delete"]}
+                        label="请输入剪切板名"
+                        value={deleteComfirm}
+                        onInput={(e: any) => setDeleteComfirm(e.target.value)}
+                        style={{width: "100%"}}
+                    ></MdOutlinedTextField>
+                </div>
+
+                <div slot="actions">
+                    <MdOutlinedButton 
+                        className={styles["danger-delete"]}
+                        onClick={startDelete}
+                        disabled={deleteComfirm !== paste.name}
+                    >确定</MdOutlinedButton>
+                    <MdFilledButton 
+                        onClick={cancelDelete}
+                    >取消</MdFilledButton>
+                </div>
+            </MdDialog>
         </div>
     );
 }
@@ -238,6 +304,7 @@ interface PasteEditorProps {
     readonly?: boolean,
     onChange?: (_: PasteModel) => void,
     onError?: (_: Error) => void,
+    onDelete?: () => void
 }
 
 function SwitchTextField({
@@ -280,7 +347,6 @@ function SwitchTextField({
         </span>
     )
 }
-
 
 interface SwitchTextFieldProps {
     maxLength?: number,

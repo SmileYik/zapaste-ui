@@ -44,7 +44,7 @@ export default function PatseModelDetail({
                             {paste.private && <MdIcon className={styles["status-icon"]}>{visibility_off}</MdIcon>}
                         </div>
                         <div className={styles["actions"]}>
-                            {!(paste.read_count || false) || true && (
+                            {!paste.read_count && (
                                 <MdOutlinedIconButton title="编辑" onClick={onEdit}>
                                     <MdIcon>{edit_document}</MdIcon>
                                 </MdOutlinedIconButton>

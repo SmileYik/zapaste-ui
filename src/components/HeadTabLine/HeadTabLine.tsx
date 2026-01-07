@@ -1,14 +1,8 @@
-import { useMatches } from "react-router";
+import { useMatches, useNavigate } from "react-router";
 import { MdElevation, MdFilledTonalButton, MdIcon, MdTextButton } from "../Material";
 import styles from "./HeadTabLine.module.css"
 import { useCallback, useEffect, useMemo, useRef, useState, type MouseEventHandler } from "react";
 import { menu } from "../../Menu";
-
-function getCurrentRouteId() {
-    const routes = useMatches();
-    const currentRouteId = routes[routes.length - 1]?.id;
-    return currentRouteId;
-}
 
 export default function HeadTabLine({
     items = ([] as HeadTabItem[]),
@@ -18,16 +12,18 @@ export default function HeadTabLine({
 }: HeadTabLineProps) {
     if (items.length == 0 && attach === undefined) return <></>
 
+    const routes = useMatches();
+    const currentRouteId = routes[routes.length - 1]?.id;
+
     const [selected, setSelected] = useState(defaultSelect);
     const [isSticky, setIsSticky] = useState(false);
     const sentinelRef = useRef<HTMLDivElement>(null);
     const [isAnimationTriggered, setAnimationTriggered] = useState(false);
-    const currentRouteId = getCurrentRouteId();
     const activeId = useMemo(() => {
-        const id = selected || currentRouteId;
+        const id = currentRouteId;
         menu.record(id);
         return id;
-    }, [selected])
+    }, [selected, currentRouteId])
 
     useEffect(() => {
         setAnimationTriggered(true);
@@ -82,7 +78,7 @@ export default function HeadTabLine({
                         </MenuTab>
                     ))}
                     <MenuTab
-                        onClick={() => switchItem(items.filter(item => item.name === activeId)[0] || items[0])}
+                        onClick={() => switchItem(items.filter(item => item.name === defaultSelect)[0] || items[0])}
                         active={true}
                         className={`${styles["attach-tab"]} ${attach ? styles["attach-active"] : styles["attach-hidden"]}`}
                     >

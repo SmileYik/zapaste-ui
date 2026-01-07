@@ -7,6 +7,7 @@ import PatseModelDetail, { PatseModelDetailSkeleton } from "../../components/pas
 import { useMatches, useNavigate } from "react-router";
 import type PasteModel from "../../entity/paste_model";
 import PasteEditor from "../../components/paste-editor/paste-editor";
+import { menu } from "../../Menu";
 
 export default function PatseDetail({
 
@@ -81,6 +82,10 @@ export default function PatseDetail({
         setPassword(entity.paste?.password || "");
     }
 
+    const onDelete = () => {
+        navigate(menu.currentUrl() || (route.pathname + "/.."));
+    }
+
     return (
         <div className={styles["detail-container"]}>
             {!editMode && (data || overwriteData) && (
@@ -92,7 +97,7 @@ export default function PatseDetail({
             )}
 
             {editMode && (
-                <PasteEditor pasteModle={editEntity} onChange={afterEdit}></PasteEditor>
+                <PasteEditor pasteModle={editEntity} onChange={afterEdit} onDelete={onDelete}></PasteEditor>
             )}
             
             <MdDialog key={errorTimes} open={!isPending && isError} type="alert">
