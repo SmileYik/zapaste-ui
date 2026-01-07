@@ -1,16 +1,17 @@
 
-import { MdDivider, MdElevation, MdIcon, MdOutlinedIconButton } from "../Material";
+import { MdDialog, MdDivider, MdElevation, MdFilledTextField, MdIcon, MdOutlinedIconButton, MdTextButton } from "../Material";
 import type PasteModel from "../../entity/paste_model";
 import styles from "./paste-model-detail.module.css"
 import { solarizedLight as codeStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import { LightAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import hljs from 'highlight.js';
-import { calendar_today, content_copy, edit_document, lock, visibility, visibility_off } from "../Icons";
+import { calendar_today, captive_portal, content_copy, edit_document, lock, visibility, visibility_off } from "../Icons";
 import FileList from "../file-list/file-list";
+import { useState } from "react";
 
 export default function PatseModelDetail({
     pasteModel = {} as PasteModel,
-    onEdit
+    onEdit,
 }: PatseModelDetailProps) {
 
     const paste = pasteModel.paste || {};
@@ -22,6 +23,8 @@ export default function PatseModelDetail({
 
     const createDate = paste.create_at ? new Date(paste.create_at * 1000).toLocaleString() : "未知";
 
+    const [copyLink, setCopyLink] = useState(false);
+
     return (
         <div className={styles["detail-container"]}>
             <div className={styles["panel"]}>
@@ -31,6 +34,12 @@ export default function PatseModelDetail({
                     <div className={styles["header-top"]}>
                         <div className={styles["title-group"]}>
                             <h1 className={styles["title"]}>{paste.name}</h1>
+                            <MdIcon 
+                                className={`${styles["status-icon"]} ${styles["copy-link"]}`}
+                                title="复制链接"
+                                onClick={() => setCopyLink(true)}
+                            >{captive_portal}</MdIcon>
+                            
                             {paste.has_password && <MdIcon className={styles["status-icon"]}>{lock}</MdIcon>}
                             {paste.private && <MdIcon className={styles["status-icon"]}>{visibility_off}</MdIcon>}
                         </div>
@@ -78,13 +87,33 @@ export default function PatseModelDetail({
                     </div>
                 </div>
             </div>
+
+            <MdDialog 
+                open={copyLink}
+                onClose={() => setCopyLink(false)}
+                onCancel={() => setCopyLink(false)}
+                style={{width: "80%"}}
+            >
+                <div slot="headline">复制链接</div>
+                <div slot="content">
+                    <MdFilledTextField
+                        value={location.href}
+                        selectionStart={0}
+                        selectionEnd={location.href.length}
+                        style={{width: "100%"}}
+                    ></MdFilledTextField>
+                </div>
+                <div slot="actions">
+                    <MdTextButton onClick={() => setCopyLink(false)}>确定</MdTextButton>
+                </div>
+            </MdDialog>
         </div>
     )
 }
 
 interface PatseModelDetailProps {
     pasteModel?: PasteModel,
-    onEdit?: () => void
+    onEdit?: () => void,
 }
 
 export function PatseModelDetailSkeleton() {

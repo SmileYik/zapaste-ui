@@ -37,6 +37,11 @@
     word-wrap: anywhere;
 }
 
+.copy-link {
+    cursor: pointer;
+    color: rgb(166, 166, 248);
+}
+
 .metadata {
     display: flex;
     gap: 16px;
