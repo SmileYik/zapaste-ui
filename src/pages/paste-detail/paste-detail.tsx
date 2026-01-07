@@ -39,15 +39,16 @@ export default function PatseDetail({
     });
     useEffect(() => {
         setErrorTimes(t => t + 1);
-        console.log(errorTimes);
-        
     }, [isError])
 
-    const enterPassword = useCallback(() => {
-        if (!passwordField || passwordField.trim().length === 0) {
-            return;
-        }
-        setPassword(passwordField);
+    const enterPassword = useCallback((_: FormData) => {
+        setPassword(old => {
+            if (old === passwordField) {
+                setErrorTimes(t => t + 1);
+                return old;
+            }
+            return passwordField;
+        });
     }, [passwordField]);
 
     return (
@@ -60,25 +61,24 @@ export default function PatseDetail({
                 <PatseModelDetailSkeleton></PatseModelDetailSkeleton>
             )}
             
-            <MdDialog open={!isPending && isError} type="alert">
+            <MdDialog key={errorTimes} open={!isPending && isError} type="alert">
                 <div slot="headline">请尝试输入密码</div>
-                <form slot="content" className={styles["password-dialog-content"]} method="dialog">
+                <form slot="content" className={styles["password-dialog-content"]} method="dialog" action={enterPassword}>
                     <MdOutlinedTextField
+                        name="password"
                         label="密码"
                         placeholder="请输入密码"
                         required
                         defaultValue={passwordField}
                         onChange={(target: any) => setPasswordField(target.target.value)}
-                        style={{
-                            width: "100%"
-                        }}
+                        style={{ width: "100%" }}
                     ></MdOutlinedTextField>
                     {errorTimes > 2 && (
                         <span className={styles["password-dialog-error"]}>{error?.message}</span>)
                     }
 
                     <div slot="actions" className={styles["password-dialog-actions"]}>
-                        <MdFilledButton value="ok" onClick={enterPassword}>确定</MdFilledButton>
+                        <MdFilledButton value="ok">确定</MdFilledButton>
                         <MdFilledTonalButton value="cancel" onClick={gotoChoosePastePage}>返回</MdFilledTonalButton>
                     </div>
                 </form>
