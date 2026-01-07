@@ -7,7 +7,7 @@ import styles from './PasteSummaryPage.module.css';
 
 export default class PasteSummaryPageHandler extends PaginationListHandler<PasteSummary> {
 
-    override skeletonRender = (item: PasteSummary, index: number) => {
+    override skeletonRender = (_: PasteSummary, __: number) => {
         return (
             <div className={styles["paste-summary-item"]} style={{}}>
                 <MdElevation></MdElevation>

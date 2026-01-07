@@ -1,5 +1,3 @@
-import type { PaginationParams } from "./page_list";
-
 export default class PasteSummary {
     id?: number;
     name?: string;

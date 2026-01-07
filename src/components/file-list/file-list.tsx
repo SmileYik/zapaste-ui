@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type File from "../../entity/file";
 import PaginationList from "../pagination-list";
 import PaginationListHandler from "../pagination-list/PaginationListHandler";
@@ -13,7 +13,7 @@ export default function FileList({
     readonly = false,
 }: FileListProps) {
     
-    const [list, setList] = useState(files);
+    const [list] = useState(files);
 
     const pageResult = useMemo(() => {
         return {
