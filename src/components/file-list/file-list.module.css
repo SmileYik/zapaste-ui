@@ -33,3 +33,11 @@
 .delete-button {
     --md-sys-color-on-surface-variant: var(--md-sys-color-error)
 }
+
+.file-name {
+    font-weight: 500;
+    
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

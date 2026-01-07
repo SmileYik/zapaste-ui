@@ -95,16 +95,16 @@ class FileListHandler extends PaginationListHandler<File> {
             <div className={styles["file-panel"]}>
                 <MdElevation/>
 
-                <MdIcon slot="start">
+                <MdIcon title={item.mimetype}>
                     {item.mimetype?.includes("image") ? image : file_present}
                 </MdIcon>
 
-                <div slot="headline" style={{ fontWeight: '500' }}>{filename}</div>
-                <div slot="supporting-text">
+                <div className={styles["file-name"]} title={filename}>{filename}</div>
+                <div>
                     {transformedSize.toFixed(2)} {units[unitIndex]}
                 </div>
 
-                <div slot="end" className={styles["action-bar"]}>
+                <div className={styles["action-bar"]}>
                     <MdOutlinedIconButton 
                         title="下载文件"
                         className={styles["download-button"]}
