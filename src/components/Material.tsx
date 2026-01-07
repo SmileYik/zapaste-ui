@@ -142,7 +142,13 @@ export const MdOutlinedIconButton = createComponent({
 export const MdDialog = createComponent({
     tagName: 'md-dialog',
     elementClass: MdDialogElement,
-    react: React
+    react: React,
+    events: {
+        onClose: 'close',
+        onCancel: 'cancel',
+        onOpen: 'open',
+        onOpened: 'opened',
+    },
 });
 
 export const MdSwitch = createComponent({

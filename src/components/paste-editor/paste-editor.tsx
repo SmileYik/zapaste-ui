@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { MdElevatedButton, MdElevation, MdIcon, MdIconButton, MdOutlinedSelect, MdOutlinedTextField, MdPrimaryTab, MdSecondaryTab, MdSelectOption, MdSwitch, MdTabs } from "../Material";
+import { MdDialog, MdElevatedButton, MdElevation, MdIcon, MdIconButton, MdOutlinedSelect, MdOutlinedTextField, MdPrimaryTab, MdSelectOption, MdSwitch, MdTabs, MdTextButton } from "../Material";
 import styles from "./paste-editor.module.css"
 import { lock, lock_open_right } from "../Icons";
 import type { TextFieldType } from "@material/web/textfield/outlined-text-field";
@@ -8,8 +8,7 @@ import { LightAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import hljs from 'highlight.js';
 import type File from "../../entity/file";
 import FileList from "../file-list/file-list";
-import type Paste from "../../entity/paste";
-import { createNewPasteWithFile } from "../../api";
+import { createNewPasteWithFile, updatePasteWithFile } from "../../api";
 import type { UnsupportedTextFieldType } from "@material/web/textfield/internal/text-field";
 import type PasteModel from "../../entity/paste_model";
 
@@ -30,115 +29,144 @@ function dateString(seconds: number) {
 }
 
 export default function PasteEditor({
-    pasteModle
+    pasteModle,
+    readonly,
+    onChange,
 }: PasteEditorProps) {
+    const editMode = pasteModle?.paste?.name && true || false;
+
     const [mode, setMode] = useState(0);
+    const [sendFlag, setSendFlag] = useState(false);
 
-    const [content, setContent] = useState(pasteModle?.paste?.content || "");
-    const [files, setFiles] = useState<Array<FileList>>([]);
-    const [attachements, setAttachements] = useState<File[]>(pasteModle?.files || []);
+    const [paste, setPaste] = useState(pasteModle?.paste || {});
+    const [attachements, setAttachements] = useState(pasteModle?.files || []);
+    const [files, setFiles] = useState<Array<globalThis.File>>([]);
+
+    const [error, setError] = useState<string>("");
+
     const language = useMemo(() => {
-        const highliteResult = hljs.highlightAuto(content);
-        return highliteResult.language || "text";
-    }, [content]);
+        const highliteResult = hljs.highlightAuto(paste.content || "");
+        const lang = highliteResult.language || "text";
+        setPaste({...paste, content_type: lang});
+        return lang;
+    }, [paste.content]);
 
-    const doAction = (body: FormData) => {
-        const name = (body.get("name")?.toString() || "").trim();
-        const burn_after_reads = parseInt((body.get("burn_after_reads")?.toString() || "0").trim());
-        const expiration_at = parseInt((body.get("expiration_at")?.toString() || "0").trim());
-        
-        const paste: Paste = {
-            name: name === "" ? undefined : name,
-            password: body.get("password")?.toString() || "",
-            private: "true" === (body.get("private")?.toString() || "true"),
-            read_only: "true" === (body.get("read_only")?.toString() || "true"),
-            content: body.get("content")?.toString(),
-            attachements: attachements.map(it => it.id).join(","),
-            content_type: body.get("content_type")?.toString(),
-            burn_after_reads: burn_after_reads === 0 ? undefined : burn_after_reads,
-            expiration_at: expiration_at === 0 ? undefined : expiration_at + Math.floor(Date.now() / 1000),
-        };
-        body.delete("name");
-        body.delete("password");
-        body.delete("private");
-        body.delete("read_only");
-        body.delete("content");
-        body.delete("content_type");
-        body.delete("burn_after_reads");
-        body.delete("expiration_at");
+    const doAction = () => {
+        if (readonly || sendFlag) return;
 
-        if ((paste.content || "").trim() === "") {
+        const body = new FormData;
+        const p = {...paste};
+        p.attachements = attachements.map(it => it.id).join(",");
+        if ((p.name || "").length === 0) {
+            p.name = undefined;
+        }
+        if (p.burn_after_reads === 0) p.burn_after_reads = undefined;
+        if (p.expiration_at === 0) p.expiration_at = undefined;
+        if (p.private === undefined) p.private = false;
+        if (p.read_only === undefined) p.read_only = false;
+        else if (p.expiration_at) p.expiration_at += Math.floor(Date.now() / 1000);
+        console.log(p)
+
+        const hasContent = (p.content || "").trim() !== "";
+        const hasFiles = files.length > 0;
+        if (!hasContent && !hasFiles) {
+            setError("新建剪切板时, 必须含有剪切板内容或者文件中的一个");
             return;
         }
 
-        body.set("paste", JSON.stringify(paste));
+        body.set("paste", JSON.stringify(p));
         files.forEach(file => {
-            body.append("file", file[0]);
-        })
+            body.append("file", file);
+        });
 
-        createNewPasteWithFile(body).then(it => {
-            console.log(it);
-        })
+        let promise: Promise<PasteModel>;
+        if (editMode) {
+            promise = updatePasteWithFile(p, body);
+        } else {
+            promise = createNewPasteWithFile(body);
+        }
+        promise
+            .then(it => {
+                setSendFlag(true);
+                if (it.paste) {
+                    setPaste(it.paste);
+                }
+                if (it.files) {
+                    setAttachements(it.files);
+                }
+                setFiles([]);
+                if (onChange) onChange(it);
+            })
+            .catch(e => {
+                // if (onError) {
+                //     onError(e);
+                // }
+                setError(e);
+            });
     }
 
     return (
         <div className={`${styles["panel"]}`}>
             <MdElevation/>
 
-            <form method="dialog" style={{width: "100%"}} action={doAction}>
+            <form method="dialog" style={{width: "100%"}}>
                 <div className={`${styles["metadatas"]}`}>
                     <SwitchTextField
-                        name="name"
                         label="自动生成剪切板名"
                         selectedLabel="剪切板名"
                         placeholder="自动生成剪切板名"
                         selectedPlaceholder="请输入剪切板名"
                         maxLength={16}
-                        defaultValue={pasteModle?.paste?.name || undefined}
+                        readOnly={editMode || sendFlag || readonly}
+                        value={paste.name}
+                        onChange={name => setPaste({...paste, name: name})}
                     ></SwitchTextField>
                     <SwitchTextField
-                        name="password"
                         label="禁用密码"
                         selectedLabel="密码"
                         placeholder="已禁用密码"
                         selectedPlaceholder="请输入密码"
                         maxLength={16}
                         type="password"
+                        value={paste.password}
+                        onChange={password => setPaste({...paste, password: password})}
                     />
                     
-                    <MdOutlinedSelect
-                        name="burn_after_reads"
-                        label="可阅读次数"
-                        defaultValue="0"
-                    >
-                        {readCount.map((count, _) => (
-                            <MdSelectOption key={count} value={`${count}`} defaultChecked={count === 0}>
-                                {count === 0 ? "无限" : `${count}`}
-                            </MdSelectOption>
-                        ))}
-                    </MdOutlinedSelect>
+                    <div className={`${styles["metadatas"]}`}>
+                        <MdOutlinedSelect
+                            className={`${styles["switch-text-field"]}`}
+                            label="可阅读次数"
+                            onChange={(e: any) => setPaste({...paste, burn_after_reads: parseInt(e.target.value)})}
+                        >
+                            {readCount.map((count, _) => (
+                                <MdSelectOption key={count} value={`${count}`} selected={(paste.expiration_at || 0) === count}>
+                                    {count === 0 ? "无限" : `${count}`}
+                                </MdSelectOption>
+                            ))}
+                        </MdOutlinedSelect>
 
-                    <MdOutlinedSelect
-                        name="expiration_at"
-                        label="有效期"
-                        defaultValue="0"
-                    >
-                        {expiration.map((seconds, _) => (
-                            <MdSelectOption key={seconds} value={`${seconds}`} defaultChecked={seconds === 0}>
-                                {dateString(seconds)}
-                            </MdSelectOption>
-                        ))}
-                    </MdOutlinedSelect>
+                        <MdOutlinedSelect
+                            className={`${styles["switch-text-field"]}`}
+                            label="有效期"
+                            onChange={(e: any) => setPaste({...paste, expiration_at: parseInt(e.target.value)})}
+                        >
+                            {expiration.map((seconds, _) => (
+                                <MdSelectOption key={seconds} value={`${seconds}`} selected={(paste.expiration_at || 0) === seconds}>
+                                    {dateString(seconds)}
+                                </MdSelectOption>
+                            ))}
+                        </MdOutlinedSelect>
+                    </div>
 
                     <span className={`${styles["metadatas"]}`}>
                         <label className={`${styles["switch"]}`}>
                             <span>公开</span>
-                            <span><MdSwitch name="private" icons defaultChecked={pasteModle?.paste?.private || true}></MdSwitch></span>
+                            <span><MdSwitch icons selected={!paste.private} onChange={(e: any) => setPaste({...paste, private: !e.target.selected})}></MdSwitch></span>
                         </label>
 
                         <label className={`${styles["switch"]}`}>
                             <span>只读</span>
-                            <span><MdSwitch name="read_only" icons defaultChecked={pasteModle?.paste?.read_only || false}></MdSwitch></span>
+                            <span><MdSwitch icons selected={paste.read_only} onChange={(e: any) => setPaste({...paste, read_only: e.target.selected})}></MdSwitch></span>
                         </label>
                     </span>
                 </div>
@@ -156,13 +184,13 @@ export default function PasteEditor({
                     }}>
                         {mode === 0 && (
                             <PasteContentEditor 
-                                defaultValue={content}
-                                onChange={setContent}
+                                defaultValue={paste.content}
+                                onChange={content => setPaste({...paste, content: content})}
                                 language={language}
                             ></PasteContentEditor>
                         )}
                         {mode === 1 && (
-                            <PastePreview content={content} language={language}></PastePreview>
+                            <PastePreview content={paste.content} language={language}></PastePreview>
                         )}
                         {mode === 2 && (
                             <PasteFile attachements={attachements} uploads={files} onUpload={setFiles} onDeleteAttachements={(a, b) => {
@@ -172,58 +200,69 @@ export default function PasteEditor({
                         )}
                     </div>
                 </div>
-                <div style={{display: "none"}}>
-                    <textarea name="content" value={content} readOnly/>
-                    <input name="content_type" value={language} readOnly/>
-                </div>
 
                 <MdElevatedButton
                     style={{
                         width: "100%",
                         margin: "24px auto"
                     }}
-                    type="submit"
+                    onClick={doAction}
                 >发布</MdElevatedButton>
             </form>
+
+            <MdDialog 
+                open={error !== ""}
+                type="alert"
+                onClose={() => setError("")}
+                onCancel={() => setError("")}
+            >
+                <div slot="headline">创建失败</div>
+                <div slot="content">{error}</div>
+                <div slot="actions">
+                    <MdTextButton onClick={() => setError("")}>确定</MdTextButton>
+                </div>
+            </MdDialog>
         </div>
     );
 }
 
 interface PasteEditorProps {
-    pasteModle?: PasteModel
+    pasteModle?: PasteModel,
+    readonly?: boolean,
+    onChange?: (_: PasteModel) => void,
+    onError?: (_: Error) => void,
 }
 
 function SwitchTextField({
     maxLength,
-    name,
     placeholder,
     selectedPlaceholder,
     label,
     selectedLabel,
-    defaultValue,
+    value,
     type = "text",
+    onChange,
+    readOnly,
 }: SwitchTextFieldProps) {
     const [enabled, setEnabled] = useState(false);
-    const [value, setValue] = useState<any>(defaultValue || "");
 
     return (
         <span className={`${styles["switch-text-field"]}`}>
             <MdOutlinedTextField
-                name={name}
                 label={enabled ? selectedLabel : label}
                 placeholder={enabled ? selectedPlaceholder : placeholder}
-                value={value}
-                readOnly={!enabled}
+                value={value || ""}
+                readOnly={!enabled || readOnly}
                 required={enabled}
                 type={type}
-                maxLength={value.length > 0 ? maxLength : undefined}
-                onChange={(e: any) => setValue(e.target.value)}
+                maxLength={(value || "").length > 0 ? maxLength : undefined}
+                onChange={(e: any) => onChange && onChange(e.target.value)}
             >
                 <MdIconButton
                     slot="trailing-icon"
                     toggle
-                    selected={enabled}
-                    onChange={(e: any) => { setEnabled(e.target.selected); defaultValue && setValue(undefined) }}
+                    selected={enabled || readOnly}
+                    onChange={(e: any) => setEnabled(e.target.selected)}
                     disabled={false}
                     type="button"
                 >
@@ -238,13 +277,14 @@ function SwitchTextField({
 
 interface SwitchTextFieldProps {
     maxLength?: number,
-    name: string,
     placeholder: string,
     selectedPlaceholder: string,
     label: string,
     selectedLabel: string,
     type?: TextFieldType | UnsupportedTextFieldType,
-    defaultValue?: string,
+    value?: string,
+    onChange?: (_: string) => void,
+    readOnly?: boolean
 }
 
 function PasteContentEditor({
@@ -253,15 +293,14 @@ function PasteContentEditor({
     language = "text"
 }: PasteContentEditorProps) {
 
-    const [rows, setRows] = useState(Math.max(10, defaultValue.split("\n").length))
+    const [rows, setRows] = useState(Math.max(10, defaultValue?.split("\n").length || 0))
 
     return (
         <MdOutlinedTextField
             label={`剪切板内容 - ${language}`}
             placeholder="剪切板内容"
-            required
             style={{width: "100%", minHeight: "374px"}}
-            value={defaultValue}
+            value={defaultValue || ""}
             onInput={(e: any) => {
                 setRows(Math.max(10, e.target.value.split("\n").length));
                 onChange(e.target.value);
@@ -276,7 +315,7 @@ function PasteContentEditor({
 
 interface PasteContentEditorProps {
     onChange: (content: string) => void,
-    defaultValue: string,
+    defaultValue?: string,
     language?: string
 }
 
@@ -300,13 +339,13 @@ function PastePreview({
                     "lineHeight": "1.6",
                     "background": "var(--md-sys-color-surface-container-lowest)"
                 }}
-            >{content}</SyntaxHighlighter>
+            >{content || ""}</SyntaxHighlighter>
         </div>
     );
 }
 
 interface PastePreviewProps {
-    content: string,
+    content?: string,
     language: string,
 }
 
@@ -322,16 +361,13 @@ function PasteFile({
     const files = useMemo(() => {
         const list = [...attachements];
         let index = 0;
-        for (const fl of uploads) {
-            for (let i = 0; i < fl.length; ++i) {
-                const f = fl[i];
-                list.push({
-                    filename: f.name,
-                    filesize: f.size,
-                    mimetype: f.type,
-                    hash: index.toString()
-                } as File);
-            }
+        for (const f of uploads) {
+            list.push({
+                filename: f.name,
+                filesize: f.size,
+                mimetype: f.type,
+                hash: index.toString()
+            } as File);
             index += 1;
         }
         setCount(t => t + 1);
@@ -339,15 +375,17 @@ function PasteFile({
     }, [uploads, attachements]);
 
     const chooseFile = useCallback((filelist: FileList) => {
+        const list = [...uploads];
         for (let i = 0; i < filelist.length; ++i) {
             const f = filelist[i];
             for (const file of files) {
                 if (f.name === file.filename) {
-                    return;
+                    break;
                 }
             }
+            list.push(f);
         }
-        onUpload([...uploads, filelist]);
+        onUpload(list);
     }, [files, uploads])
 
     const deleteFile = useCallback((file: File) => {
@@ -359,15 +397,7 @@ function PasteFile({
         } else {
             onDeleteAttachements(
                 attachements,
-                uploads.filter(it => {
-                    for (let i = 0; i < it.length; ++i) {
-                        const f = it[i];
-                        if (f.name === file.filename) {
-                            return false;
-                        }
-                    }
-                    return true;
-                })
+                uploads.filter(it => it.name !== file.filename)
             );
         }
     }, [uploads, attachements])
@@ -395,8 +425,8 @@ function PasteFile({
 }
 
 interface PasteFileProps {
-    uploads: FileList[],
+    uploads: globalThis.File[],
     attachements: File[],
-    onUpload: (_: FileList[]) => void,
-    onDeleteAttachements: (_: File[], __: FileList[]) => void,
+    onUpload: (_: globalThis.File[]) => void,
+    onDeleteAttachements: (_: File[], __: globalThis.File[]) => void,
 }
