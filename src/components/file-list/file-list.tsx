@@ -34,7 +34,7 @@ export default function FileList({
     return (
         <div className={styles["file-list"]}>
             <div className={styles["file-list-header"]}>
-                <h2 className={styles["file-list-title"]}>Files</h2>
+                {/* <h2 className={styles["file-list-title"]}>Files</h2> */}
                 <MdDivider/>
             </div>
             <PaginationList 
