@@ -1,11 +1,11 @@
-import { createBrowserRouter, Navigate, Outlet } from "react-router";
+import { createHashRouter, Navigate, Outlet } from "react-router";
 import Index from "../pages/index";
 import PasteList from "../pages/paste-list/paste-list";
 import App from "../App";
 import ChoosePaste from "../pages/choose-paste/choose-paste";
 import PatseDetail from "../pages/paste-detail/paste-detail";
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
     {
         id: "root",
         path: "/",
@@ -49,4 +49,6 @@ export const router = createBrowserRouter([
             },
         ]
     }
-])
+], {
+    
+})
