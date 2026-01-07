@@ -4,7 +4,7 @@ import PaginationList from "../pagination-list";
 import PaginationListHandler from "../pagination-list/PaginationListHandler";
 import type { PaginationParams } from "../../entity/page_list";
 import type PageList from "../../entity/page_list";
-import { MdDivider, MdElevation, MdIcon, MdOutlinedIconButton } from "../Material";
+import { MdElevation, MdIcon, MdOutlinedIconButton } from "../Material";
 import { delete_icon, download, file_present, image } from "../Icons"
 import styles from "./file-list.module.css"
 import { downloadUrl } from "../../api";

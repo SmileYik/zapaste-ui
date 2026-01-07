@@ -22,3 +22,7 @@
 .page-button:hover {
     transform: translateY(-4px);
 }
+
+.default-body {
+    border-radius: 28px;
+}

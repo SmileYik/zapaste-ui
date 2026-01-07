@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from "react";
-import { MdDialog, MdElevatedButton, MdElevation, MdFilledButton, MdFilledTonalButton, MdIcon, MdIconButton, MdOutlinedButton, MdOutlinedSelect, MdOutlinedTextField, MdPrimaryTab, MdSelectOption, MdSwitch, MdTabs, MdTextButton } from "../Material";
+import { MdDialog, MdElevatedButton, MdElevation, MdFilledButton, MdIcon, MdIconButton, MdOutlinedButton, MdOutlinedSelect, MdOutlinedTextField, MdPrimaryTab, MdSelectOption, MdSwitch, MdTabs, MdTextButton } from "../Material";
 import styles from "./paste-editor.module.css"
 import { lock, lock_open_right } from "../Icons";
 import type { TextFieldType } from "@material/web/textfield/outlined-text-field";

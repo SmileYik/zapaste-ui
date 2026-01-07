@@ -106,7 +106,7 @@ export default function PaginationList<T>({
                 }}></div></MaskPanel>}
                 {error && <p>{error.message}</p>}
                 <MdList 
-                    className={bodyClassName} 
+                    className={`${bodyClassName} ${styles["default-body"]}`} 
                     style={{
                         flexDirection: "row",
                         flexWrap: "wrap",
