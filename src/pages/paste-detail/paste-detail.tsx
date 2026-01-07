@@ -5,6 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getLockedPaste } from "../../api";
 import PatseModelDetail, { PatseModelDetailSkeleton } from "../../components/paste-model-detail/paste-model-detail";
 import { useMatches, useNavigate } from "react-router";
+import type PasteModel from "../../entity/paste_model";
+import PasteEditor from "../../components/paste-editor/paste-editor";
 
 export default function PatseDetail({
 
@@ -31,15 +33,12 @@ export default function PatseDetail({
         return (<></>)
     }
 
-    const {isPending, error, data, isError} = useQuery({
+    let {isPending, error, data, isError} = useQuery({
         queryKey: ["data", name, password],
         queryFn: () => getLockedPaste(name, password),
         retry: false,
         enabled: !isEmptyName
     });
-    useEffect(() => {
-        setErrorTimes(t => t + 1);
-    }, [isError])
 
     const enterPassword = useCallback((_: FormData) => {
         setPassword(old => {
@@ -51,14 +50,49 @@ export default function PatseDetail({
         });
     }, [passwordField]);
 
+    const [editMode, setEditMode] = useState(false);
+    const [editEntity, setEditEntity] = useState<PasteModel | undefined>();
+    const [overwriteData, setOverwriteData] = useState<PasteModel | undefined>(undefined);
+
+    useEffect(() => {
+        setErrorTimes(t => t + 1);
+        setOverwriteData(undefined);
+    }, [isError])
+
+    useEffect(() => {
+        setOverwriteData(undefined);
+    }, [data])
+
+    const onEdit = () => {
+        const p = data;
+        if (p) {
+            if (p.paste) {
+                p.paste.password = password;
+            }
+            setEditEntity(p);
+            setEditMode(true);
+        }
+    }
+
+    const afterEdit = (entity: PasteModel) => {
+        setEditMode(false);
+        setEditEntity(undefined);
+        setOverwriteData(entity);
+        setPassword(entity.paste?.password || "");
+    }
+
     return (
         <div className={styles["detail-container"]}>
-            {data && (
-                <PatseModelDetail pasteModel={data}></PatseModelDetail>
+            {!editMode && (data || overwriteData) && (
+                <PatseModelDetail pasteModel={overwriteData || data} onEdit={onEdit}></PatseModelDetail>
             )}
 
             {(isPending || isError) && (
                 <PatseModelDetailSkeleton></PatseModelDetailSkeleton>
+            )}
+
+            {editMode && (
+                <PasteEditor pasteModle={editEntity} onChange={afterEdit}></PasteEditor>
             )}
             
             <MdDialog key={errorTimes} open={!isPending && isError} type="alert">
@@ -90,37 +124,3 @@ export default function PatseDetail({
 interface PatseDetailProps {
     
 }
-
-// function PasteNameInput({
-//     name = "",
-//     onChange,
-// }: PasteNameInputProps) {
-//     const [currentName, setCurrentName] = useState(name)
-//     return (
-//         <div>
-//             <form className={styles["request-paste-name"]} method="dialog">
-//                 <MdElevation/>
-
-//                 <MdOutlinedTextField
-//                     label="剪切板名"
-//                     placeholder="请输入剪切板名"
-//                     required
-//                     defaultValue={currentName}
-//                     onChange={(target: any) => setCurrentName(target.target.value)}
-//                     style={{
-//                         width: "100%"
-//                     }}
-//                 ></MdOutlinedTextField>
-
-//                 <div className={styles["request-paste-name-actions"]}>
-//                     <MdFilledButton value="ok" onClick={() => onChange(currentName)}>确定</MdFilledButton>
-//                 </div>
-//             </form>
-//         </div>
-//     );
-// }
-
-// interface PasteNameInputProps {
-//     name?: string,
-//     onChange: (name: string) => void
-// }

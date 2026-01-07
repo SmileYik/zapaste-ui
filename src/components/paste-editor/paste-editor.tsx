@@ -34,6 +34,7 @@ export default function PasteEditor({
     onChange,
 }: PasteEditorProps) {
     const editMode = pasteModle?.paste?.name && true || false;
+    const password = pasteModle?.paste?.password || "";
 
     const [mode, setMode] = useState(0);
     const [sendFlag, setSendFlag] = useState(false);
@@ -74,15 +75,20 @@ export default function PasteEditor({
             return;
         }
 
-        body.set("paste", JSON.stringify(p));
+        
         files.forEach(file => {
             body.append("file", file);
         });
 
         let promise: Promise<PasteModel>;
         if (editMode) {
+            body.set("paste", JSON.stringify({
+                password: password,
+                paste: p
+            }));
             promise = updatePasteWithFile(p, body);
         } else {
+            body.set("paste", JSON.stringify(p));
             promise = createNewPasteWithFile(body);
         }
         promise
@@ -95,13 +101,14 @@ export default function PasteEditor({
                     setAttachements(it.files);
                 }
                 setFiles([]);
-                if (onChange) onChange(it);
+                const e = it;
+                if (e.paste) {
+                    e.paste.password = p.password;
+                }
+                if (onChange) onChange(e);
             })
             .catch(e => {
-                // if (onError) {
-                //     onError(e);
-                // }
-                setError(e);
+                setError(e.message);
             });
     }
 
@@ -129,7 +136,7 @@ export default function PasteEditor({
                         maxLength={16}
                         type="password"
                         value={paste.password}
-                        onChange={password => setPaste({...paste, password: password})}
+                        onChange={p => setPaste({...paste, password: p})}
                     />
                     
                     <div className={`${styles["metadatas"]}`}>

@@ -9,7 +9,8 @@ import { calendar_today, content_copy, edit_document, lock, visibility, visibili
 import FileList from "../file-list/file-list";
 
 export default function PatseModelDetail({
-    pasteModel = {} as PasteModel
+    pasteModel = {} as PasteModel,
+    onEdit
 }: PatseModelDetailProps) {
 
     const paste = pasteModel.paste || {};
@@ -35,7 +36,7 @@ export default function PatseModelDetail({
                         </div>
                         <div className={styles["actions"]}>
                             {!(paste.read_count || false) || true && (
-                                <MdOutlinedIconButton title="编辑" onClick={() => navigator.clipboard.writeText(content)}>
+                                <MdOutlinedIconButton title="编辑" onClick={onEdit}>
                                     <MdIcon>{edit_document}</MdIcon>
                                 </MdOutlinedIconButton>
                             )}
@@ -82,7 +83,8 @@ export default function PatseModelDetail({
 }
 
 interface PatseModelDetailProps {
-    pasteModel?: PasteModel
+    pasteModel?: PasteModel,
+    onEdit?: () => void
 }
 
 export function PatseModelDetailSkeleton() {
