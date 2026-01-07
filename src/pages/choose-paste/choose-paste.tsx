@@ -10,12 +10,18 @@ export default function ChoosePaste() {
         const url = generatePath("/paste/view/:name", { name: name })
         navigate(url)
     }, []);
+
+    function gotoPaste(formData: FormData) {
+        goto(formData.get("pasteName")?.toString() || "");
+    }
+
     return (
         <div>
-            <form className={styles["panel"]} method="dialog">
+            <form className={styles["panel"]} action={gotoPaste}>
                 <MdElevation/>
 
                 <MdOutlinedTextField
+                    name="pasteName"
                     label="剪切板名"
                     placeholder="请输入剪切板名"
                     required
@@ -27,7 +33,7 @@ export default function ChoosePaste() {
                 ></MdOutlinedTextField>
 
                 <div className={styles["request-paste-name-actions"]}>
-                    <MdFilledButton value="ok" onClick={() => goto(currentName)}>确定</MdFilledButton>
+                    <MdFilledButton value="ok">确定</MdFilledButton>
                 </div>
             </form>
         </div>
