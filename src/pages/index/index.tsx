@@ -18,7 +18,7 @@ export default function Index() {
             <div className={styles["project-info"]}>
                 <h1 className={styles["project-name"]}>Zapaste UI</h1>
                 <p className={styles["project-bio"]}>
-                    解锁 <a href="https://github.com/SmileYik/zapaste"><strong>Zapaste</strong></a> 的无限可能。一个基于 <strong>Material Design 3</strong> 风格构建的轻量级、响应式剪切板交互界面。
+                    解锁 <strong style={{cursor: "pointer"}} onClick={() => window.open("https://github.com/SmileYik/zapaste")}>Zapaste</strong> 的无限可能。一个基于 <strong>Material Design 3</strong> 风格构建的轻量级、响应式剪切板交互界面。
                 </p>
             </div>
 

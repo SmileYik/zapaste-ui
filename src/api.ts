@@ -36,141 +36,202 @@ const response2PasteModel = async (response: Response): Promise<PasteModel> => {
 export const fetchPublicPastes = async (
     query: PaginationParams
 ): Promise<PageList<PasteSummary>> => {
-    const params = new URLSearchParams({
-        page_no: query.page_no.toString(),
-        page_size: query.page_size.toString()
-    });
-    const response = await fetch(`${baseUrl}/paste?${params}`, { headers: getHeader() });
-
-    const json = await response.json();
-    const result = Result.fromJSON<PageList<PasteSummary>>(json, (data) => {
-        return new PageList(data);
-    });
-
-    if (result.code !== 200) {
-        throw new Error(result.message || "Unknown Error")
+    try {
+        const params = new URLSearchParams({
+            page_no: query.page_no.toString(),
+            page_size: query.page_size.toString()
+        });
+        const response = await fetch(`${baseUrl}/paste?${params}`, { headers: getHeader() });
+    
+        const json = await response.json();
+        const result = Result.fromJSON<PageList<PasteSummary>>(json, (data) => {
+            return new PageList(data);
+        });
+    
+        if (result.code !== 200) {
+            throw new Error(result.message || "Unknown Error")
+        }
+        return result.data || new PageList();
+    } catch (e: any) {
+        if (e.message === "Failed to fetch") {
+            throw new Error("401 Unauthorized");
+        }
+        throw e;
     }
-    return result.data || new PageList();
 };
 
 export const createNewPasteWithoutFile = async (
     paste: Paste
 ): Promise<PasteModel> => {
-    const response = await fetch(`${baseUrl}/paste`, {
-        method: "POST",
-        headers: getJsonHeader(),
-        body: JSON.stringify(paste)
-    });
-
-    return await response2PasteModel(response);
+    try {
+        const response = await fetch(`${baseUrl}/paste`, {
+            method: "POST",
+            headers: getJsonHeader(),
+            body: JSON.stringify(paste)
+        });
+    
+        return await response2PasteModel(response);
+    } catch (e: any) {
+        if (e.message === "Failed to fetch") {
+            throw new Error("401 Unauthorized");
+        }
+        throw e;
+    }
 };
 
 export const createNewPasteWithFile = async (
     body: FormData
 ): Promise<PasteModel> => {
-    const response = await fetch(`${baseUrl}/paste`, {
-        method: "POST",
-        body: body,
-        headers: getHeader()
-    });
-
-    return await response2PasteModel(response);
+    try {
+        const response = await fetch(`${baseUrl}/paste`, {
+            method: "POST",
+            body: body,
+            headers: getHeader()
+        });
+        return await response2PasteModel(response);
+    } catch (e: any) {
+        if (e.message === "Failed to fetch") {
+            throw new Error("401 Unauthorized");
+        }
+        throw e;
+    }
 };
 
 export const getUnlockedPaste = async (
     name: string
 ): Promise<PasteModel> => {
-    const response = await fetch(`${baseUrl}/paste/${name}`, { headers: getHeader() });
-
-    return await response2PasteModel(response);
+    try{
+        const response = await fetch(`${baseUrl}/paste/${name}`, { headers: getHeader() });
+        return await response2PasteModel(response);
+    } catch (e: any) {
+        if (e.message === "Failed to fetch") {
+            throw new Error("401 Unauthorized");
+        }
+        throw e;
+    }
 }
 
 export const getLockedPaste = async (
     name: string,
     password: string
 ): Promise<PasteModel> => {
-    const response = await fetch(`${baseUrl}/paste/${name}`, {
-        method: "POST",
-        headers: getJsonHeader(),
-        body: JSON.stringify({
-            password: password
-        })
-    });
-
-    return await response2PasteModel(response);
+    try {
+        const response = await fetch(`${baseUrl}/paste/${name}`, {
+            method: "POST",
+            headers: getJsonHeader(),
+            body: JSON.stringify({
+                password: password
+            })
+        });
+    
+        return await response2PasteModel(response);
+    } catch (e: any) {
+        if (e.message === "Failed to fetch") {
+            throw new Error("401 Unauthorized");
+        }
+        throw e;
+    }
 }
 
 export const updatePasteWithoutFile = async (
     paste: Paste
 ): Promise<PasteModel> => {
-    if (paste.name === undefined || paste.name === "") {
-        throw new Error("name cannot be empty");
+    try {
+        if (paste.name === undefined || paste.name === "") {
+            throw new Error("name cannot be empty");
+        }
+        const response = await fetch(`${baseUrl}/paste/${paste.name}`, {
+            method: "PUT",
+            headers: getJsonHeader(),
+            body: JSON.stringify(paste)
+        });
+    
+        return await response2PasteModel(response);
+    } catch (e: any) {
+        if (e.message === "Failed to fetch") {
+            throw new Error("401 Unauthorized");
+        }
+        throw e;
     }
-    const response = await fetch(`${baseUrl}/paste/${paste.name}`, {
-        method: "PUT",
-        headers: getJsonHeader(),
-        body: JSON.stringify(paste)
-    });
-
-    return await response2PasteModel(response);
 };
 
 export const updatePasteWithFile = async (
     paste: Paste,
     body: FormData
 ): Promise<PasteModel> => {
-    if (paste.name === undefined || paste.name === "") {
-        throw new Error("name cannot be empty");
+    try {
+        if (paste.name === undefined || paste.name === "") {
+            throw new Error("name cannot be empty");
+        }
+        const response = await fetch(`${baseUrl}/paste/${paste.name}`, {
+            method: "PUT",
+            body: body,
+            headers: getHeader()
+        });
+    
+        return await response2PasteModel(response);
+    } catch (e: any) {
+        if (e.message === "Failed to fetch") {
+            throw new Error("401 Unauthorized");
+        }
+        throw e;
     }
-    const response = await fetch(`${baseUrl}/paste/${paste.name}`, {
-        method: "PUT",
-        body: body,
-        headers: getHeader()
-    });
-
-    return await response2PasteModel(response);
 };
 
 export const deleteUnlockedPaste = async (
     name: string
 ): Promise<Boolean> => {
-    const response = await fetch(`${baseUrl}/paste/${name}`, {
-        method: "DELETE",
-        headers: getHeader(),
-    });
-
-    const json = await response.json();
-    const result = Result.fromJSON<PasteModel>(json, (data) => {
-        return new PasteModel(data);
-    });
-
-    if (result.code !== 200) {
-        throw new Error(result.message || "Unknown Error")
+    try {
+        const response = await fetch(`${baseUrl}/paste/${name}`, {
+            method: "DELETE",
+            headers: getHeader(),
+        });
+    
+        const json = await response.json();
+        const result = Result.fromJSON<PasteModel>(json, (data) => {
+            return new PasteModel(data);
+        });
+    
+        if (result.code !== 200) {
+            throw new Error(result.message || "Unknown Error")
+        }
+        return true;
+    } catch (e: any) {
+        if (e.message === "Failed to fetch") {
+            throw new Error("401 Unauthorized");
+        }
+        throw e;
     }
-    return true;
 }
 
 export const deleteLockedPaste = async (
     name: string,
     password: string
 ): Promise<Boolean> => {
-    const response = await fetch(`${baseUrl}/paste/${name}/delete`, {
-        method: "POST",
-        headers: getJsonHeader(),
-        body: JSON.stringify({
-            password: password
-        })
-    });
-
-    const json = await response.json();
-    const result = Result.fromJSON<PasteModel>(json, (data) => {
-        return new PasteModel(data);
-    });
-
-    if (result.code !== 200) {
-        throw new Error(result.message || "Unknown Error")
+    try {
+        const response = await fetch(`${baseUrl}/paste/${name}/delete`, {
+            method: "POST",
+            headers: getJsonHeader(),
+            body: JSON.stringify({
+                password: password
+            })
+        });
+    
+        const json = await response.json();
+        const result = Result.fromJSON<PasteModel>(json, (data) => {
+            return new PasteModel(data);
+        });
+    
+        if (result.code !== 200) {
+            throw new Error(result.message || "Unknown Error")
+        }
+        return true;
+    } catch (e: any) {
+        if (e.message === "Failed to fetch") {
+            throw new Error("401 Unauthorized");
+        }
+        throw e;
     }
-    return true;
 }
 
 export function downloadUrl(pasteName: string, filename: string) {
