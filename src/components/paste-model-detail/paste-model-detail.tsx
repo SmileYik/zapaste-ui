@@ -8,7 +8,7 @@ import hljs from 'highlight.js';
 import { calendar_today, captive_portal, content_copy, edit_document, lock, visibility, visibility_off } from "../Icons";
 import FileList from "../file-list/file-list";
 import { useMemo, useState } from "react";
-import { generatePath, useMatches } from "react-router";
+import { generatePath } from "react-router";
 
 export default function PatseModelDetail({
     pasteModel = {} as PasteModel,
