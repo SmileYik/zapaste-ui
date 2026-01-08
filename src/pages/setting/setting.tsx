@@ -8,6 +8,7 @@ export default function Setting() {
 
     const [basicAuth, setBasicAuth] = useState({username: "", password: ""});
     const [message, setMessage] = useState("");
+    const [count, setCount] = useState(0);
 
     const saveBasicAuth = useCallback(() => {
         const encode = window.btoa(`${basicAuth.username}:${basicAuth.password}`);
@@ -63,12 +64,16 @@ export default function Setting() {
                     </form>
                 </FloatPanel>
             </SubSetting>
-            <SubSetting text="Basic 验证器设置">
+            <SubSetting text="验证器信息">
                 <FloatPanel style={{
                     width: "80%",
                     backgroundColor: "var(--md-sys-color-surface-container-high, #f7f2fa)"
                 }}>
-                    <h1>Basic 验证器设置</h1>
+                    <h1 key={`auth-info-${count}`}>当前使用验证器为: {auth.getAuth()?.type || "无验证器"}</h1>
+                    <MdOutlinedButton 
+                        style={{width: "80%"}} 
+                        onClick={() => { auth.storeAuth(null); setCount(c => c + 1); }}
+                    >清除验证器信息</MdOutlinedButton>
                 </FloatPanel>
             </SubSetting>
 
