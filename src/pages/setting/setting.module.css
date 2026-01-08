@@ -1,0 +1,15 @@
+.subsetting {
+    transition: all 0.65s ease-in-out;
+}
+
+.subsetting-close {
+    pointer-events: none;
+    max-height: 0;
+    opacity: 0;
+}
+
+.subsetting-open {
+    pointer-events: all; 
+    opacity: 1;
+}
+

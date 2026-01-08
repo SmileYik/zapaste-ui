@@ -6,6 +6,21 @@ import Result from "./entity/result"
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
+const getHeader = () => {
+    const header = new Headers();
+    const ac = auth.getAuth();
+    if (ac?.type === "basic" && ac.auth) {
+        header.append("authorization", ac.auth);
+    }
+    return header;
+}
+
+const getJsonHeader = () => {
+    const header = getHeader();
+    header.append("Content-Type", "application/json");
+    return header;
+}
+
 const response2PasteModel = async (response: Response): Promise<PasteModel> => {
     const json = await response.json();
     const result = Result.fromJSON<PasteModel>(json, (data) => {
@@ -25,7 +40,7 @@ export const fetchPublicPastes = async (
         page_no: query.page_no.toString(),
         page_size: query.page_size.toString()
     });
-    const response = await fetch(`${baseUrl}/paste?${params}`);
+    const response = await fetch(`${baseUrl}/paste?${params}`, { headers: getHeader() });
 
     const json = await response.json();
     const result = Result.fromJSON<PageList<PasteSummary>>(json, (data) => {
@@ -43,9 +58,7 @@ export const createNewPasteWithoutFile = async (
 ): Promise<PasteModel> => {
     const response = await fetch(`${baseUrl}/paste`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: getJsonHeader(),
         body: JSON.stringify(paste)
     });
 
@@ -57,7 +70,8 @@ export const createNewPasteWithFile = async (
 ): Promise<PasteModel> => {
     const response = await fetch(`${baseUrl}/paste`, {
         method: "POST",
-        body: body
+        body: body,
+        headers: getHeader()
     });
 
     return await response2PasteModel(response);
@@ -66,7 +80,7 @@ export const createNewPasteWithFile = async (
 export const getUnlockedPaste = async (
     name: string
 ): Promise<PasteModel> => {
-    const response = await fetch(`${baseUrl}/paste/${name}`);
+    const response = await fetch(`${baseUrl}/paste/${name}`, { headers: getHeader() });
 
     return await response2PasteModel(response);
 }
@@ -77,9 +91,7 @@ export const getLockedPaste = async (
 ): Promise<PasteModel> => {
     const response = await fetch(`${baseUrl}/paste/${name}`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: getJsonHeader(),
         body: JSON.stringify({
             password: password
         })
@@ -96,9 +108,7 @@ export const updatePasteWithoutFile = async (
     }
     const response = await fetch(`${baseUrl}/paste/${paste.name}`, {
         method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: getJsonHeader(),
         body: JSON.stringify(paste)
     });
 
@@ -114,7 +124,8 @@ export const updatePasteWithFile = async (
     }
     const response = await fetch(`${baseUrl}/paste/${paste.name}`, {
         method: "PUT",
-        body: body
+        body: body,
+        headers: getHeader()
     });
 
     return await response2PasteModel(response);
@@ -124,7 +135,8 @@ export const deleteUnlockedPaste = async (
     name: string
 ): Promise<Boolean> => {
     const response = await fetch(`${baseUrl}/paste/${name}`, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: getHeader(),
     });
 
     const json = await response.json();
@@ -144,9 +156,7 @@ export const deleteLockedPaste = async (
 ): Promise<Boolean> => {
     const response = await fetch(`${baseUrl}/paste/${name}/delete`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: getJsonHeader(),
         body: JSON.stringify({
             password: password
         })
@@ -166,3 +176,26 @@ export const deleteLockedPaste = async (
 export function downloadUrl(pasteName: string, filename: string) {
     return `${baseUrl}/paste/${pasteName}/file/name/${filename}`;
 }
+
+export const auth = {
+    storeAuth(config: AuthConfig | null) {
+        if (config === null) {
+            localStorage.removeItem("auth");
+        } else {
+            localStorage.setItem("auth", JSON.stringify(config));
+        }
+    },
+
+    getAuth() {
+        const json = localStorage.getItem("auth");
+        if (json) {
+            return JSON.parse(json) as AuthConfig;
+        }
+        return null;
+    }
+};
+
+export interface AuthConfig {
+    type?: string,
+    auth?: string
+};
