@@ -7,7 +7,8 @@ import { LightAsync as SyntaxHighlighter } from 'react-syntax-highlighter';
 import hljs from 'highlight.js';
 import { calendar_today, captive_portal, content_copy, edit_document, lock, visibility, visibility_off } from "../Icons";
 import FileList from "../file-list/file-list";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { generatePath, useMatches } from "react-router";
 
 export default function PatseModelDetail({
     pasteModel = {} as PasteModel,
@@ -24,6 +25,17 @@ export default function PatseModelDetail({
     const createDate = paste.create_at ? new Date(paste.create_at * 1000).toLocaleString() : "未知";
 
     const [copyLink, setCopyLink] = useState(false);
+    
+    const shareUrl = useMemo(() => {
+        const href = location.href;
+        const suffix = generatePath("/paste/view/:name", { name: paste.name || "" });
+        const idx = href.indexOf("#");
+        if (idx > 0) {
+            return href.substring(0, idx + 1) + suffix;
+        } else {
+            return window.location.origin + suffix;
+        }
+    }, [paste.name]);
 
     return (
         <div className={styles["detail-container"]}>
@@ -97,9 +109,9 @@ export default function PatseModelDetail({
                 <div slot="headline">复制链接</div>
                 <div slot="content">
                     <MdFilledTextField
-                        value={location.href}
+                        value={shareUrl}
                         selectionStart={0}
-                        selectionEnd={location.href.length}
+                        selectionEnd={shareUrl.length}
                         style={{width: "100%"}}
                     ></MdFilledTextField>
                 </div>
