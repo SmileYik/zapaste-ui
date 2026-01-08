@@ -97,7 +97,8 @@ export default function PaginationList<T>({
         <div>
             <div ref={containerRef} style={{
                 position: "relative",
-                width: "100%"
+                width: "100%",
+                padding: "10px 0"
             }}>
                 {isPending && <MaskPanel><div style={{
                     width: "100%",

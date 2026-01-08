@@ -64,23 +64,25 @@ export default function PatseModelDetail({
                 </div>
 
                 <div className={styles["panel-body"]}>
-                    <div className={styles["code-container"]}>
-                        <SyntaxHighlighter
-                            language={language}
-                            style={codeStyle}
-                            showLineNumbers
-                            useInlineStyles
-                            customStyle={{
-                                "borderRadius": "20px",
-                                "minHeight": "350px",
-                                "padding": "12px",
-                                "margin": "8px",
-                                "fontSize": "14px",
-                                "lineHeight": "1.6",
-                                "background": "var(--md-sys-color-surface-container-lowest)"
-                            }}
-                        >{content}</SyntaxHighlighter>
-                    </div>
+                    {content && content !== "" && (
+                        <div className={styles["code-container"]}>
+                            <SyntaxHighlighter
+                                language={language}
+                                style={codeStyle}
+                                showLineNumbers
+                                useInlineStyles
+                                customStyle={{
+                                    "borderRadius": "20px",
+                                    "minHeight": "350px",
+                                    "padding": "12px",
+                                    "margin": "8px",
+                                    "fontSize": "14px",
+                                    "lineHeight": "1.6",
+                                    "background": "var(--md-sys-color-surface-container-lowest)"
+                                }}
+                            >{content}</SyntaxHighlighter>
+                        </div>
+                    )}
 
                     <div className={styles["file-container"]}>
                         {files && files.length > 0 && <FileList readonly files={files || []} pasteName={paste.name || ""}></FileList>}
