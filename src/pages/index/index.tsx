@@ -1,18 +1,16 @@
-import { MdElevation, MdFilledButton, MdIcon, MdOutlinedButton } from "../../components/Material";
+import { MdFilledButton, MdIcon, MdOutlinedButton } from "../../components/Material";
 import styles from "./index.module.css"
 import AUTHOR_AVATAR from "../../asserts/author-avatar.png";
 import { add, code } from "../../components/Icons";
 import { useNavigate } from "react-router";
+import FloatPanel from "../../components/float-panel/float-panel";
 
 export default function Index() {
 
     const navigate = useNavigate();
 
     return (
-        <div className={styles["panel"]}>
-            <MdElevation/>
-
-            {/* 头像区域：增加悬停效果 */}
+        <FloatPanel style={{padding: "40px 0"}}>
             <div className={styles["author-avatar"]}>
                 <img src={AUTHOR_AVATAR} alt="SmileYik Avatar" />
             </div>
@@ -34,6 +32,6 @@ export default function Index() {
                     查看源代码
                 </MdOutlinedButton>
             </div>
-        </div>
+        </FloatPanel>
     );
 }
