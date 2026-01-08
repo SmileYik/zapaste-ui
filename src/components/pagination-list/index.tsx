@@ -44,6 +44,7 @@ export default function PaginationList<T>({
     const { isPending, error, data } = useQuery({
         queryKey: ["data", pageParams],
         queryFn: () => requestFn(pageParams),
+        retry: false
     });
 
     const realData = useMemo(() => {
@@ -100,12 +101,15 @@ export default function PaginationList<T>({
                 width: "100%",
                 padding: "10px 0"
             }}>
-                {isPending && <MaskPanel><div style={{
+                {(isPending || error !== null) && <MaskPanel><div style={{
                     width: "100%",
                     height: "100%",
-                    backgroundColor: "#ffffff65"
-                }}></div></MaskPanel>}
-                {error && <p>{error.message}</p>}
+                    backgroundColor: "#ffffff65",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: "26px"
+                }}><span>{error && error.message}</span></div></MaskPanel>}
                 <MdList 
                     className={`${bodyClassName} ${styles["default-body"]}`} 
                     style={{
