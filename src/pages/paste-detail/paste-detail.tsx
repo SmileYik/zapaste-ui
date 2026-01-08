@@ -97,7 +97,7 @@ export default function PatseDetail({
             )}
 
             {editMode && (
-                <PasteEditor pasteModle={editEntity} onChange={afterEdit} onDelete={onDelete}></PasteEditor>
+                <PasteEditor pasteModle={editEntity} onChange={afterEdit} onDelete={onDelete} readonly={(editEntity?.paste?.read_only || false) === true}></PasteEditor>
             )}
             
             <MdDialog key={errorTimes} open={!isPending && isError} type="alert">

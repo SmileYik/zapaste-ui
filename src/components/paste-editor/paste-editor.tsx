@@ -238,7 +238,9 @@ export default function PasteEditor({
                         margin: "24px auto 2px"
                     }}
                     onClick={doAction}
-                >发布</MdElevatedButton>
+                >
+                    {readonly ? ("只读模式") : (sendFlag ? "已创建" : "发布")}
+                </MdElevatedButton>
                 {editMode && (
                     <MdOutlinedButton
                         className={styles["danger-delete"]}

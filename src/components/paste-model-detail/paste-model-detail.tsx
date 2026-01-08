@@ -44,11 +44,9 @@ export default function PatseModelDetail({
                             {paste.private && <MdIcon className={styles["status-icon"]}>{visibility_off}</MdIcon>}
                         </div>
                         <div className={styles["actions"]}>
-                            {!paste.read_count && (
-                                <MdOutlinedIconButton title="编辑" onClick={onEdit}>
-                                    <MdIcon>{edit_document}</MdIcon>
-                                </MdOutlinedIconButton>
-                            )}
+                            <MdOutlinedIconButton title="编辑" onClick={onEdit}>
+                                <MdIcon>{edit_document}</MdIcon>
+                            </MdOutlinedIconButton>
                             <MdOutlinedIconButton title="复制" onClick={() => navigator.clipboard.writeText(content)}>
                                 <MdIcon>{content_copy}</MdIcon>
                             </MdOutlinedIconButton>
