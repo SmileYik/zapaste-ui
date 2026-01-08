@@ -1,23 +1,29 @@
+import { add_notes, home, list_alt, table_eye } from "./components/Icons";
+
 export const menus = ([
     {
         name: "index",
         label: "首页",
-        path: "/index"
+        path: "/index",
+        icon: home
     },
     {
         name: "list-paste",
         label: "公开列表",
-        path: "/paste/list"
+        path: "/paste/list",
+        icon: list_alt
     },
     {
         name: "new-paste",
-        label: "新剪切板",
-        path: "/paste/new"
+        label: "新建便条",
+        path: "/paste/new",
+        icon: add_notes
     },
     {
         name: "choose-paste",
-        label: "查看剪切板",
-        path: "/paste/view"
+        label: "查看便条",
+        path: "/paste/view",
+        icon: table_eye
     }
 ]) as Menu[];
 

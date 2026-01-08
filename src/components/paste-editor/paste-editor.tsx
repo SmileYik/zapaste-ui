@@ -76,7 +76,6 @@ export default function PasteEditor({
             setError("新建剪切板时, 必须含有剪切板内容或者文件中的一个");
             return;
         }
-
         
         files.forEach(file => {
             body.append("file", file);
@@ -93,6 +92,7 @@ export default function PasteEditor({
             body.set("paste", JSON.stringify(p));
             promise = createNewPasteWithFile(body);
         }
+        
         promise
             .then(it => {
                 setSendFlag(true);

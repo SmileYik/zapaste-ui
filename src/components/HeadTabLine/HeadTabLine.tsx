@@ -72,6 +72,7 @@ export default function HeadTabLine({
                             active={attach === undefined && activeId === item.name}
                             onClick={() => switchItem(item)}
                             className={isAnimationTriggered ? styles["animated-button"] : ""}
+                            title={item.label}
                         >
                             {item.icon && <MdIcon slot="icon">{item.icon}</MdIcon>}
                             {item.label}
@@ -104,10 +105,11 @@ function MenuTab({
     style,
     onClick,
     className,
+    title,
 }: MenuTabProps) {
     const ButtonOption = active ? MdFilledTonalButton : MdTextButton;
     return (
-        <ButtonOption className={`${styles["panel-button"]} ${className || ""}`} style={style} onClick={onClick}>
+        <ButtonOption title={title} className={`${styles["panel-button"]} ${className || ""}`} style={style} onClick={onClick}>
             {children}
         </ButtonOption>
     )
@@ -118,7 +120,8 @@ interface MenuTabProps {
     style?: React.CSSProperties,
     children: React.ReactNode,
     onClick?: MouseEventHandler<any> | undefined,
-    className?: string
+    className?: string,
+    title?: string
 };
 
 export interface HeadTabItem {
