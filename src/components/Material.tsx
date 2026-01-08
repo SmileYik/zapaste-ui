@@ -22,6 +22,11 @@ import { MdDialog as MdDialogElement } from '@material/web/dialog/dialog.js';
 import { MdSwitch as MdSwitchElement } from '@material/web/switch/switch.js';
 import { MdOutlinedSelect as MdOutlinedSelectElement} from '@material/web/select/outlined-select.js';
 import { MdSelectOption as MdSelectOptionElement} from '@material/web/select/select-option.js';
+import { MdFab as MdFabElement } from '@material/web/fab/fab.js';
+import { MdBrandedFab as MdBrandedFabElement } from '@material/web/fab/branded-fab.js';
+import { MdMenu as MdMenuElement } from '@material/web/menu/menu.js';
+import { MdMenuItem as MdMenuItemElement } from '@material/web/menu/menu-item.js';
+import { MdSubMenu as MdSubMenuElement } from '@material/web/menu/sub-menu.js';
 
 import { createComponent } from '@lit/react';
 
@@ -167,4 +172,38 @@ export const MdSelectOption = createComponent({
     tagName: 'md-select-option',
     elementClass: MdSelectOptionElement,
     react: React
+});
+
+export const MdFab = createComponent({
+    tagName: 'md-fab',
+    elementClass: MdFabElement,
+    react: React,
+});
+
+export const MdBrandedFab = createComponent({
+    tagName: 'md-branded-fab',
+    elementClass: MdBrandedFabElement,
+    react: React,
+});
+
+export const MdMenu = createComponent({
+    tagName: 'md-menu',
+    elementClass: MdMenuElement,
+    react: React,
+    events: {
+        'opened': 'opened',
+        'closed': 'closed',
+    }
+});
+
+export const MdMenuItem = createComponent({
+    tagName: 'md-menu-item',
+    elementClass: MdMenuItemElement,
+    react: React,
+});
+
+export const MdSubMenu = createComponent({
+    tagName: 'md-sub-menu',
+    elementClass: MdSubMenuElement,
+    react: React,
 });
