@@ -2,7 +2,7 @@ import { MdDialog, MdFilledButton, MdFilledTonalButton, MdOutlinedTextField } fr
 import styles from "./paste-detail.module.css"
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getLockedPaste } from "../../api";
+import { downloadUrlWithPassword, getLockedPaste } from "../../api";
 import PatseModelDetail, { PatseModelDetailSkeleton } from "../../components/paste-model-detail/paste-model-detail";
 import { useMatches, useNavigate } from "react-router";
 import type PasteModel from "../../entity/paste_model";
@@ -47,6 +47,9 @@ export default function PatseDetail({
                 setErrorTimes(t => t + 1);
                 return old;
             }
+            if (data && data.paste) {
+                data.paste.password = passwordField;
+            }
             return passwordField;
         });
     }, [passwordField]);
@@ -89,7 +92,9 @@ export default function PatseDetail({
     return (
         <div className={styles["detail-container"]}>
             {!editMode && (data || overwriteData) && (
-                <PatseModelDetail pasteModel={overwriteData || data} onEdit={onEdit}></PatseModelDetail>
+                <PatseModelDetail pasteModel={overwriteData || data} onEdit={onEdit}  onDownloadFile={filename => {
+                    downloadUrlWithPassword(data?.paste?.name || "", password || "", filename)
+                }}></PatseModelDetail>
             )}
 
             {(isPending || isError) && (

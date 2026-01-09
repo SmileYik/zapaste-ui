@@ -13,6 +13,7 @@ import { generatePath } from "react-router";
 export default function PatseModelDetail({
     pasteModel = {} as PasteModel,
     onEdit,
+    onDownloadFile,
 }: PatseModelDetailProps) {
 
     const paste = pasteModel.paste || {};
@@ -95,7 +96,7 @@ export default function PatseModelDetail({
                     )}
 
                     <div className={styles["file-container"]}>
-                        {files && files.length > 0 && <FileList readonly files={files || []} pasteName={paste.name || ""}></FileList>}
+                        {files && files.length > 0 && <FileList readonly files={files || []} pasteName={paste.name || ""} onDownload={onDownloadFile}></FileList>}
                     </div>
                 </div>
             </div>
@@ -126,6 +127,7 @@ export default function PatseModelDetail({
 interface PatseModelDetailProps {
     pasteModel?: PasteModel,
     onEdit?: () => void,
+    onDownloadFile?: (filename: string) => void
 }
 
 export function PatseModelDetailSkeleton() {

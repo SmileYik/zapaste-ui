@@ -238,6 +238,32 @@ export function downloadUrl(pasteName: string, filename: string) {
     return `${baseUrl}/paste/${pasteName}/file/name/${filename}`;
 }
 
+export async function downloadUrlWithPassword(
+    pasteName: string, 
+    password: string,
+    filename: string
+) {
+    try {
+        const response = await fetch(`${baseUrl}/paste/${pasteName}/file/name/${filename}`, {
+          method: 'POST',
+          headers: getJsonHeader(),
+          body: JSON.stringify({ password }),
+        });
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (err) {
+        throw new Error("401 Unauthorized");
+      }
+}
+
 export const auth = {
     storeAuth(config: AuthConfig | null) {
         if (config === null) {

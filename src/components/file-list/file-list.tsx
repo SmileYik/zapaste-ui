@@ -7,13 +7,13 @@ import type PageList from "../../entity/page_list";
 import { MdElevation, MdIcon, MdOutlinedIconButton } from "../Material";
 import { delete_icon, download, file_present, image } from "../Icons"
 import styles from "./file-list.module.css"
-import { downloadUrl } from "../../api";
 
 export default function FileList({
     files = [] as File[],
     pasteName,
     readonly = false,
     onDelete,
+    onDownload,
 }: FileListProps) {
 
     const pageResult = useMemo(() => {
@@ -41,7 +41,7 @@ export default function FileList({
             <PaginationList 
                 requestFn={requestList} 
                 bypassData={pageResult}
-                handler={new FileListHandler(readonly, pasteName, onDelete)}
+                handler={new FileListHandler(readonly, pasteName, onDelete, onDownload)}
                 disablePagination
                 disableEmptyFill
                 lineCount={1}
@@ -55,7 +55,8 @@ interface FileListProps {
     files: File[],
     readonly?: boolean,
     pasteName: string,
-    onDelete?: (file: File) => void
+    onDelete?: (file: File) => void,
+    onDownload?: (filename: string) => void,
 }
 
 class FileListHandler extends PaginationListHandler<File> {
@@ -63,12 +64,14 @@ class FileListHandler extends PaginationListHandler<File> {
     readonly: boolean = false;
     pasteName: string = "";
     onDelete?: (file: File) => void;
+    onDownload?: (filename: string) => void;
 
-    constructor(readonly: boolean, pasteName: string, onDelete?: (file: File) => void) {
+    constructor(readonly: boolean, pasteName: string, onDelete?: (file: File) => void, onDownload?: (filename: string) => void) {
         super()
         this.readonly = readonly;
         this.pasteName = pasteName;
         this.onDelete = onDelete;
+        this.onDownload = onDownload;
     }
 
     override skeletonRender = (_: File, __: number) => {
@@ -92,7 +95,8 @@ class FileListHandler extends PaginationListHandler<File> {
         }
 
         const gotoDownload = (filename: string) => {
-            window.open(downloadUrl(this.pasteName, filename));
+            this.onDownload && this.onDownload(filename);
+            // window.open(downloadUrl(this.pasteName, filename));
         };
 
         return (
