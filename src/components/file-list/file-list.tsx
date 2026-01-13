@@ -5,8 +5,9 @@ import PaginationListHandler from "../pagination-list/PaginationListHandler";
 import type { PaginationParams } from "../../entity/page_list";
 import type PageList from "../../entity/page_list";
 import { MdElevation, MdIcon, MdOutlinedIconButton } from "../Material";
-import { delete_icon, download, file_present, image } from "../Icons"
+import { delete_icon, download, file_present, image, visibility } from "../Icons"
 import styles from "./file-list.module.css"
+import { downloadUrl } from "../../api";
 
 export default function FileList({
     files = [] as File[],
@@ -120,6 +121,16 @@ class FileListHandler extends PaginationListHandler<File> {
                             onClick={() => gotoDownload(item.filename || "")}
                         >
                             <MdIcon>{download}</MdIcon>
+                        </MdOutlinedIconButton>
+                    )}
+
+                    {item.id && (
+                        <MdOutlinedIconButton 
+                            title="尝试预览"
+                            className={styles["download-button"]}
+                            onClick={() => window.open(downloadUrl(this.pasteName, item.filename || ""))}
+                        >
+                            <MdIcon>{visibility}</MdIcon>
                         </MdOutlinedIconButton>
                     )}
                     
